@@ -373,7 +373,7 @@ const OL='#1a1326';
 // Playable riders. Each is a palette plus a few feature flags that the sprite builders read.
 // hs = hair style, hat = headwear, slv = sleeves, pat = shirt pattern, veh = vehicle.
 const CHARS=[
- {id:'ginna',name:'Ginita',nick:'Ginna',skin:'#e2a77f',sk2:'#c4865f',neck:'#c98a64',hair:'#4a2c1f',hr2:'#5e3a28',hs:'tail',hat:'beanie',top:'#f5c02e',tp2:'#c98f16',tp3:'#ffe07a',cuff:'#e3a91f',slv:'long',jacket:1,gloves:1,bot:'#2f3b5c',bt2:'#45538a',shoe:'#6b4226',boot:1},
+ {id:'ginna',name:'Ginita',nick:'Ginna',skin:'#e2a77f',sk2:'#c4865f',neck:'#c98a64',hair:'#4a2c1f',hr2:'#5e3a28',hs:'tail',hat:'beanie',gsemi:1,gfr:'#3a2a24',top:'#f5c02e',tp2:'#c98f16',tp3:'#ffe07a',cuff:'#e3a91f',slv:'long',jacket:1,gloves:1,bot:'#2f3b5c',bt2:'#45538a',shoe:'#6b4226',boot:1},
  {id:'jahel',name:'Jahelcito',skin:'#d9a07a',sk2:'#b5805c',hair:'#3b2517',hr2:'#23140c',hs:'curly',top:'#737c58',tp2:'#586044',tp3:'#8e9870',slv:'short',bot:'#1d1c22',bt2:'#34333c',shorts:1,shoe:'#26252b',beard:'stub',bc:'#6a4630'},
  {id:'meg',name:'Meg',skin:'#f2c7a8',sk2:'#d8a686',hair:'#d9b56c',hr2:'#b08a48',hs:'long',len:5,top:'#f1ece2',tp2:'#d6cfc0',tp3:'#ffffff',pat:'stripe',patC:'#6e2a3c',patC2:'#e0a830',slv:'short',bot:'#3d4d70',bt2:'#56679a',shoe:'#e8e4dc'},
  {id:'gatewood',name:'Grandma Gatewood',short:'Grandma',skin:'#f1cdb8',sk2:'#d6ab94',hair:'#f2f2f2',hr2:'#c9c9cc',brow:'#b8b0a8',hs:'short',hat:'bucket',hatC:'#5c6064',hatC2:'#42464a',glass:'#f0a22a',gfr:'#c07a20',lensA:.85,top:'#bcd6de',tp2:'#95b4be',tp3:'#dcebf0',pat:'open',patC:'#2b62b8',slv:'long',bot:'#8a8474',bt2:'#a39d8c',shoe:'#6a5846'},
@@ -522,12 +522,11 @@ function riderHead(P,C,b,fl){const y=b,H=C.hair,H2=C.hr2,S=C.skin,S2=C.sk2;
   if(C.beard==='chin')P(17,2+y,2,1,C.bc);
   if(C.stache){P(16,0+y,4,1,C.stache);P(16,1+y,1,1,C.stache);P(19,1+y,1,1,C.stache);}
   // glasses
-  if(C.glass){P(16,-1+y,3,1,C.glass);P(16,-2+y,3,1,C.gfr);P(14,-2+y,2,1,C.gfr);if(C.lensA<.5)P(17,-1+y,1,1,'#2a1a1a');}
+  if(C.gsemi){P(14,-2+y,3,1,C.gfr);P(16,-1+y,1,1,C.gfr);P(18,-1+y,1,1,C.gfr);}
+  else if(C.glass){P(16,-1+y,3,1,C.glass);P(16,-2+y,3,1,C.gfr);P(14,-2+y,2,1,C.gfr);if(C.lensA<.5)P(17,-1+y,1,1,'#2a1a1a');}
   // headwear
   if(C.hat==='beanie'){
-    P(13,-5+y,6,2,'#8a8f98');P(14,-6+y,4,1,'#8a8f98');P(13,-5+y,1,2,'#6b7079');P(17,-6+y,1,1,'#a9aeb6');
-    P(13,-3+y,6,1,'#b1b5bd');P(14,-3+y,1,1,'#8a8f98');P(16,-3+y,1,1,'#8a8f98');P(18,-3+y,1,1,'#8a8f98');
-    P(15,-8+y,2,2,'#cfd2d8');}
+    P(13,-5+y,6,3,'#8a8f98');P(14,-6+y,4,1,'#8a8f98');for(let x=14;x<19;x+=2)P(x,-4+y,1,2,'#7e838c');P(13,-5+y,1,3,'#80858e');}
   if(C.hat==='bucket'){P(13,-7+y,6,3,C.hatC);P(14,-7+y,4,1,mix(C.hatC,'#ffffff',.25));P(13,-5+y,6,1,C.hatC2);P(11,-4+y,10,1,C.hatC2);P(11,-3+y,1,1,C.hatC2);P(20,-3+y,1,1,C.hatC2);}
   if(C.hat==='cap'){P(13,-6+y,6,2,C.hatC);P(14,-6+y,4,1,mix(C.hatC,'#ffffff',.3));P(19,-4+y,3,1,C.hatC2);P(13,-4+y,6,1,C.hatC2);}
   if(C.hat==='ears'){const k='#1a1418';P(14,-5+y,5,1,k);P(12,-8+y,3,3,k);P(16,-8+y,3,3,k);P(15,-6+y,2,1,'#d72b2b');}
@@ -561,8 +560,8 @@ function miniFrame(f,C){return spr(20,18,(P0)=>{const P=(x,y,w,h,c)=>P0(x,y+3,w,
   else if(C.hs!=='afro'&&C.hs!=='curly'){P(6,-2+b,1,2,H);if(C.hs!=='short')P(6,-3+b,4,1,H);}
   if(C.hs==='curly'||C.hs==='afro')P(6,-4+b,4,1,H);
   if(C.hs==='tail'||C.hs==='pony')P(5,-2+b,1,1,H);
-  if(C.beard==='full')P(7,-1+b,3,1,C.bc);if(C.stache)P(9,-1+b,1,1,C.stache);if(C.glass)P(9,-2+b,1,1,C.gfr);
-  if(C.hat==='beanie'){P(7,-4+b,3,1,'#8a8f98');P(6,-3+b,4,1,'#b1b5bd');P(8,-5+b,1,1,'#cfd2d8');}
+  if(C.beard==='full')P(7,-1+b,3,1,C.bc);if(C.stache)P(9,-1+b,1,1,C.stache);if(C.glass&&!C.gsemi)P(9,-2+b,1,1,C.gfr);
+  if(C.hat==='beanie'){P(7,-4+b,3,1,'#8a8f98');P(6,-3+b,4,1,'#8a8f98');}
   if(C.hat==='bucket'){P(7,-4+b,3,1,C.hatC);P(5,-3+b,6,1,C.hatC2);}
   if(C.hat==='cap'){P(6,-4+b,4,1,C.hatC);P(10,-3+b,1,1,C.hatC2);}
   if(C.hat==='ears'){P(6,-4+b,1,1,'#1a1418');P(9,-4+b,1,1,'#1a1418');}
@@ -620,7 +619,8 @@ function drawPortrait(c,C){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.
   if(C.beard==='chin'){P(18,27,4,2,C.bc);P(19,29,2,1,C.bc);}
   if(C.stache){P(14,23,12,2,C.stache);P(13,24,2,3,C.stache);P(25,24,2,3,C.stache);P(16,22,8,1,C.stache);}
   // glasses
-  if(C.glass){g.globalAlpha=C.lensA;P(14,19,4,3,C.glass);P(22,19,4,3,C.glass);g.globalAlpha=1;const k=C.gfr;
+  if(C.gsemi){const k=C.gfr;for(const x of[13,21]){P(x,18,6,1,k);P(x,19,1,2,k);P(x+5,19,1,2,k);P(x+1,21,1,1,k);P(x+4,21,1,1,k);P(x+2,22,2,1,k);}P(19,19,2,1,k);P(10,18,3,1,k);P(27,18,3,1,k);}
+  else if(C.glass){g.globalAlpha=C.lensA;P(14,19,4,3,C.glass);P(22,19,4,3,C.glass);g.globalAlpha=1;const k=C.gfr;
     for(const x of[13,21]){P(x,18,6,1,k);P(x,22,6,1,k);P(x,18,1,5,k);P(x+5,18,1,5,k);}P(19,19,2,1,k);P(10,19,3,1,k);P(27,19,3,1,k);}
   // hair in front
   if(!C.hat||C.hat==='ears'||C.hat==='cap'){
@@ -634,11 +634,9 @@ function drawPortrait(c,C){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.
   if(C.hs==='short'){P(9,16,4,6,H);P(27,16,4,6,H);P(10,21,2,3,H2);P(28,21,2,3,H2);}
   // headwear
   if(C.hat==='beanie'){
-    for(let y=2;y<=14;y++){const w=y<5?6+(y-2)*3:12;P(20-w,y,w*2,1,'#8a8f98');}
-    P(8,5,3,9,'#6b7079');P(27,4,3,6,'#a9aeb6');
-    for(let x=9;x<31;x++)P(x,12,1,3,x%2?'#b1b5bd':'#9a9fa7');
-    for(let i=0;i<14;i++)P(11+((i*7)%18),3+((i*5)%8),1,1,'#7a7f88');
-    circ(P,20,1,3,(x,y)=>y<0&&x<1?'#e4e6ea':'#c6c9cf');}
+    // soft knit: faint vertical ribs, a subtle stitch grid and gentle side shading
+    for(let y=2;y<=14;y++){const w=y<5?6+(y-2)*3:12;for(let x=20-w;x<20+w;x++){const rib=(x&1)===0,st=((x>>1)+y)%2===0;
+      let c=rib?'#848991':'#8e939c';if(!rib&&st)c='#92979f';if(x<20-w+3)c=mix(c,'#6b7079',.35);else if(x>=20+w-3)c=mix(c,'#a9aeb6',.3);P(x,y,1,1,c);}}}
   if(C.hat==='bucket'){P(10,3,20,9,C.hatC);P(12,2,16,1,C.hatC);P(12,4,6,2,mix(C.hatC,'#ffffff',.2));P(10,9,20,2,C.hatC2);P(5,11,30,3,C.hatC2);P(6,11,28,1,mix(C.hatC2,'#ffffff',.2));}
   if(C.hat==='cap'){circ(P,20,12,10,(x,y)=>y<0?(x<-3?mix(C.hatC,'#ffffff',.2):C.hatC):null);P(10,11,20,2,C.hatC2);P(12,13,16,1,C.hatC2);P(18,5,4,2,'#f4f0e4');}
   if(C.hat==='ears'){const k='#1a1418';P(10,10,20,2,k);circ(P,9,6,5,()=>k);circ(P,31,6,5,()=>k);P(16,6,8,4,'#d72b2b');P(19,7,2,2,'#a81e1e');P(17,7,1,1,'#fff');P(22,8,1,1,'#fff');}
