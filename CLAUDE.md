@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-"Broken Boots Road Trip": a pixel-art browser game, a fan game inspired by Broken Boots Travel (brokenbootstravel.com). Ginna (yellow jacket, gray beanie, brown "broken" boots) rides her black AKT scooter Kali across all 32 departments of Colombia. Department facts, taglines and "best thing to do" come from the site's 32-departments pages. `filmed: 1` marks departments Ginna has actually documented. The rest use our own tips and show "coming soon".
+"Broken Boots Road Trip": a pixel-art browser game, a fan game inspired by Broken Boots Travel (brokenbootstravel.com). Ginna (yellow jacket, gray beanie, brown "broken" boots) rides her black AKT scooter Kali across all 32 departments of Colombia. Department facts, taglines and "best thing to do" come from the site's 32-departments pages. `filmed: 1` marks departments Ginna has actually documented. The rest use our own tips (postcard label "Traveler tip").
 
 ## Running / checking
 
