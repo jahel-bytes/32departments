@@ -374,7 +374,7 @@ const OL='#1a1326';
 // hs = hair style, hat = headwear, slv = sleeves, pat = shirt pattern, veh = vehicle.
 const CHARS=[
  {id:'ginna',name:'Ginita',nick:'Ginna',skin:'#e2a77f',sk2:'#c4865f',neck:'#c98a64',hair:'#4a2c1f',hr2:'#5e3a28',hs:'tail',hat:'beanie',gsemi:1,gfr:'#3a2a24',top:'#f5c02e',tp2:'#c98f16',tp3:'#ffe07a',cuff:'#e3a91f',slv:'long',jacket:1,gloves:1,bot:'#2f3b5c',bt2:'#45538a',shoe:'#6b4226',boot:1},
- {id:'jahel',name:'Jahelcito',skin:'#d9a07a',sk2:'#b5805c',hair:'#3b2517',hr2:'#23140c',hs:'curly',top:'#737c58',tp2:'#586044',tp3:'#8e9870',slv:'short',bot:'#1d1c22',bt2:'#34333c',shorts:1,shoe:'#26252b',beard:'stub',bc:'#6a4630'},
+ {id:'jahel',name:'Jahelcito',skin:'#ecbf9f',sk2:'#cf9b7c',hair:'#241812',hr2:'#46302a',brow:'#1e1410',hs:'curly',top:'#6f7d52',tp2:'#56613e',tp3:'#8c9a6a',pat:'linen',blush:'#e4b393',lip:'#b06a58',lip2:'#d08c7a',slv:'long',bot:'#1d1c22',bt2:'#34333c',shorts:1,shoe:'#26252b'},
  {id:'meg',name:'Meg',skin:'#f2c7a8',sk2:'#d8a686',hair:'#d9b56c',hr2:'#b08a48',hs:'long',len:5,top:'#f1ece2',tp2:'#d6cfc0',tp3:'#ffffff',pat:'stripe',patC:'#6e2a3c',patC2:'#e0a830',slv:'short',bot:'#3d4d70',bt2:'#56679a',shoe:'#e8e4dc'},
  {id:'gatewood',name:'Grandma Gatewood',short:'Grandma',skin:'#f1cdb8',sk2:'#d6ab94',hair:'#f2f2f2',hr2:'#c9c9cc',brow:'#b8b0a8',hs:'short',hat:'bucket',hatC:'#5c6064',hatC2:'#42464a',glass:'#f0a22a',gfr:'#c07a20',lensA:.85,top:'#bcd6de',tp2:'#95b4be',tp3:'#dcebf0',pat:'open',patC:'#2b62b8',slv:'long',bot:'#8a8474',bt2:'#a39d8c',shoe:'#6a5846'},
  {id:'juli',name:'Juli',skin:'#e3aa88',sk2:'#c48a68',hair:'#6a4428',hs:'bald',glass:'#bcd4e0',gfr:'#d62828',lensA:.35,stache:'#6a4428',beard:'stub',bc:'#a8785c',top:'#3a3a48',tp2:'#e8e4dc',tp3:'#55556a',pat:'plaid',slv:'long',bot:'#2f3b5c',bt2:'#45538a',shoe:'#5a3a22'},
@@ -478,6 +478,7 @@ function riderFrame(f,C){
       if(C.slv==='tank'&&i===0){P(x0,y,tw0,1,C.skin);P(x0+2,y,1,1,C.top);}}
     if(C.pat==='mickey'){const k='#1a1418';P(12+sx,5+b,1,1,k);P(14+sx,5+b,1,1,k);P(13+sx,6+b,1,1,k);P(12+sx,6+b,1,1,k);P(14+sx,6+b,1,1,k);P(13+sx,7+b,1,1,k);}
     if(C.jacket){P(11,8+b,5,1,'#dfe6ea');P(13,2+b,3,1,'#d9a31f');}
+    else if(C.pat==='linen'){P(13,2+b,2,1,C.tp3);P(15,2+b,1,2,C.skin);for(let i=0;i<9;i++)P(12+Math.floor(i/2),3+b+i,1,1,'#1c1b20');}
     else if(C.pat==='polo'){P(13,2+b,3,1,C.tp3);P(15,3+b,1,2,C.tp2);}
     else if(C.slv!=='tank')P(14,2+b,2,1,C.skin);
     // arm to the grips
@@ -498,7 +499,7 @@ function riderHead(P,C,b,fl){const y=b,H=C.hair,H2=C.hr2,S=C.skin,S2=C.sk2;
     case 'tail':case 'pony':P(13,-2+y,2,4,H);P(10,-1+y+fl,3,2,H);P(8,0+y+(1-fl),2,1,H2);break;
     case 'long':P(12,-3+y,3,C.len,H);P(12,-3+y,1,C.len,H2);P(11-fl,-5+y+C.len,2,2,H);break;
     case 'bob':P(12,-3+y,3,5,H);P(13,-3+y,1,4,H2);break;
-    case 'curly':P(11,-4+y,4,6,H);P(10,-2+y+fl,1,2,H);[[11,-3],[13,-1],[12,1],[11,0]].forEach(([x,yy])=>P(x,yy+y,1,1,H2));break;
+    case 'curly':P(11,-5+y,4,5,H);P(12,0+y,2,1,H);P(10,-4+y+fl,1,2,H);[[11,-4],[12,-2]].forEach(([x,yy])=>P(x,yy+y,1,1,H2));break;
     case 'afro':circ(P,13,-3+y,5,(x,yy)=>((x*3+yy*5+40)%7)===0?H2:H);break;
     case 'braids':P(12,-3+y,3,2,H);for(let k=0;k<4;k++)for(let j=0;j<11-k;j++)P(10+k-(j>6?fl:0),-3+y+j,1,1,(j+k)%2?H:H2);break;
     case 'short':P(13,-2+y,2,3,H);P(12,0+y,1,2,H2);break;
@@ -509,7 +510,7 @@ function riderHead(P,C,b,fl){const y=b,H=C.hair,H2=C.hr2,S=C.skin,S2=C.sk2;
   // hair on top
   switch(C.hs){
     case 'tail':case 'pony':case 'long':case 'bob':P(13,-4+y,6,1,H);P(13,-3+y,4,1,H);if(C.hs==='bob')P(13,-2+y,2,2,H);break;
-    case 'curly':P(12,-5+y,7,2,H);P(13,-3+y,3,1,H);P(18,-3+y,1,1,H);P(13,-6+y,1,1,H);P(15,-6+y,2,1,H);P(18,-6+y,1,1,H);P(14,-5+y,1,1,H2);P(17,-4+y,1,1,H2);break;
+    case 'curly':P(12,-6+y,7,3,H);P(13,-3+y,2,1,H);P(17,-3+y,3,1,H);P(18,-2+y,1,1,H);P(13,-7+y,2,1,H);P(16,-7+y,2,1,H);P(19,-5+y,1,2,H);P(14,-6+y,1,1,H2);P(17,-5+y,1,1,H2);break;
     case 'afro':P(13,-4+y,6,1,H);P(13,-3+y,3,1,H);break;
     case 'braids':P(13,-4+y,6,1,H);P(13,-3+y,3,1,H);P(15,-4+y,1,1,H2);P(17,-4+y,1,1,H2);break;
     case 'buzz':P(14,-4+y,5,1,H);P(13,-3+y,3,1,H);P(13,-2+y,1,2,H);break;
@@ -518,6 +519,7 @@ function riderHead(P,C,b,fl){const y=b,H=C.hair,H2=C.hr2,S=C.skin,S2=C.sk2;
   if(['bald','buzz','short','pony'].includes(C.hs))P(15,-1+y,1,2,S2);
   // facial hair
   if(C.beard==='stub'){P(15,1+y,2,1,C.bc);P(14,0+y,1,1,C.bc);P(16,0+y,1,1,C.bc);P(19,1+y,1,1,C.bc);P(17,2+y,2,1,C.bc);}
+  if(C.beard==='short'){P(14,-1+y,1,3,C.bc);P(15,0+y,1,2,C.bc);P(16,0+y,3,1,C.bc);P(19,1+y,1,1,C.bc);P(15,2+y,4,1,C.bc);P(17,1+y,2,1,'#9a5a4a');}
   if(C.beard==='full'){P(14,-1+y,1,3,C.bc);P(15,0+y,5,3,C.bc);P(16,3+y,3,1,C.bc);P(17,1+y,2,1,C.lip);}
   if(C.beard==='chin')P(17,2+y,2,1,C.bc);
   if(C.stache){P(16,0+y,4,1,C.stache);P(16,1+y,1,1,C.stache);P(19,1+y,1,1,C.stache);}
@@ -560,7 +562,7 @@ function miniFrame(f,C){return spr(20,18,(P0)=>{const P=(x,y,w,h,c)=>P0(x,y+3,w,
   else if(C.hs!=='afro'&&C.hs!=='curly'){P(6,-2+b,1,2,H);if(C.hs!=='short')P(6,-3+b,4,1,H);}
   if(C.hs==='curly'||C.hs==='afro')P(6,-4+b,4,1,H);
   if(C.hs==='tail'||C.hs==='pony')P(5,-2+b,1,1,H);
-  if(C.beard==='full')P(7,-1+b,3,1,C.bc);if(C.stache)P(9,-1+b,1,1,C.stache);if(C.glass&&!C.gsemi)P(9,-2+b,1,1,C.gfr);
+  if(C.beard==='full'||C.beard==='short')P(7,-1+b,3,1,C.bc);if(C.stache)P(9,-1+b,1,1,C.stache);if(C.glass&&!C.gsemi)P(9,-2+b,1,1,C.gfr);
   if(C.hat==='beanie'){P(7,-4+b,3,1,'#8a8f98');P(6,-3+b,4,1,'#8a8f98');}
   if(C.hat==='bucket'){P(7,-4+b,3,1,C.hatC);P(5,-3+b,6,1,C.hatC2);}
   if(C.hat==='cap'){P(6,-4+b,4,1,C.hatC);P(10,-3+b,1,1,C.hatC2);}
@@ -585,7 +587,7 @@ function drawPortrait(c,C){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.
     case 'pony':P(10,12,20,14,H);P(30,14,3,12,H2);break;
     case 'long':{const e=C.len>6?40:33;P(9,12,22,e-12,H);P(7,18,4,e-18,H);P(29,18,4,e-18,H2);break;}
     case 'bob':P(9,11,22,18,H);P(8,14,4,15,H);P(28,14,4,15,H2);break;
-    case 'curly':circ(P,20,17,13,(x,y)=>((x*5+y*3+99)%6)<1?H2:H);P(8,22,5,8,H);P(27,22,5,8,H);break;
+    case 'curly':circ(P,20,14,11,(x,y)=>y>1||y<-9?null:(y%3===0&&(x+y+33)%4===0)?H2:H);P(11,13,2,6,H);P(28,13,2,6,H);break;
     case 'afro':circ(P,20,15,19,(x,y)=>((x*7+y*5+400)%9)<2?H2:H);break;
     case 'braids':P(11,11,18,6,H);for(let k=0;k<7;k++)for(let y=14;y<41;y++){P(5+k,y,1,1,(y+k)%2?H:H2);P(29+k,y,1,1,(y+k)%2?H2:H);}break;
     case 'short':P(10,14,20,10,H);break;
@@ -598,11 +600,13 @@ function drawPortrait(c,C){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.
   if(C.pat==='lace')for(let y=32;y<40;y++)for(let x=4+(y%2);x<36;x+=3)P(x,y,1,1,C.tp3);
   if(C.pat==='open'){P(13,32,14,8,C.patC);if(C.patC2)for(let i=0;i<8;i++)P(14+((i*5)%12),33+((i*3)%7),1,1,C.patC2);P(12,32,1,8,C.tp2);P(27,32,1,8,C.tp2);}
   if(C.pat==='mickey'){const k='#1a1418';circ(P,20,36,2,()=>k);circ(P,17,33,1,()=>k);circ(P,23,33,1,()=>k);}
+  if(C.pat==='linen'){P(17,31,6,2,C.neck);P(18,33,4,2,C.neck);P(19,35,2,1,C.neck);P(13,30,5,3,C.tp3);P(22,30,5,3,C.tp3);P(16,32,1,4,C.tp2);P(23,32,1,4,C.tp2);
+    for(let i=0;i<9;i++)P(26+Math.floor(i*.8),31+i,2,1,'#1c1b20');for(let x=8;x<34;x+=6)P(x,34+(x%4),1,3,C.tp2);}
   if(C.pat==='polo'){P(14,30,5,3,C.tp3);P(21,30,5,3,C.tp3);P(19,32,2,4,C.tp2);P(19,33,1,1,'#fff');}
   if(C.slv==='tank'){P(4,32,9,8,S);P(27,32,9,8,S);P(4,32,3,8,S2);P(12,30,3,3,C.top);P(25,30,3,3,C.top);if(C.build==='bulk'){P(5,34,6,1,S2);P(29,34,6,1,S2);}}
   if(C.jacket){P(13,30,14,4,'#d9a31f');P(19,32,2,8,'#8a8f98');P(4,37,32,1,'#dfe6ea');}
   // neck
-  P(16,26,8,5,C.neck);if(!C.jacket&&C.pat!=='polo'&&C.pat!=='open')P(15,31,10,1,C.neck);
+  P(16,26,8,5,C.neck);if(!C.jacket&&C.pat!=='polo'&&C.pat!=='open'&&C.pat!=='linen')P(15,31,10,1,C.neck);
   // head
   if(bald||C.hs==='buzz')circ(P,20,18,9,(x,y)=>x>6?S2:S);
   if(['bald','buzz','short','pony'].includes(C.hs)){P(10,19,2,4,S2);P(28,19,2,4,S2);}
@@ -612,10 +616,13 @@ function drawPortrait(c,C){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.
   P(15,19,2,2,'#2a1a1a');P(23,19,2,2,'#2a1a1a');P(15,19,1,1,'#fff');P(23,19,1,1,'#fff');
   P(14,17,3,1,C.brow);P(22,17,3,1,C.brow);
   if(!C.beard){P(13,22,2,1,C.blush);P(25,22,2,1,C.blush);}
-  P(19,22,2,1,S2);P(17,25,6,1,C.lip);P(18,26,4,1,C.lip2);
+  P(19,22,2,1,S2);if(C.hs==='curly')P(20,20,1,2,mix(S,S2,.5));P(17,25,6,1,C.lip);P(18,26,4,1,C.lip2);
   // facial hair
   if(C.beard==='full'){circ(P,20,21,9,(x,y)=>(y>1&&(y>3||Math.abs(x)>5))||Math.abs(x)>7&&y>-2?(((x+y+30)%4)?C.bc:mix(C.bc,'#ffffff',.2)):null);P(15,23,10,2,C.bc);P(17,25,6,1,'#6a3a30');P(18,26,4,1,C.lip2);}
   if(C.beard==='stub')for(let y=21;y<31;y++)for(let x=11;x<30;x++){const dx=x-20,dy=y-20;if(dx*dx+dy*dy<=72&&(y>23||Math.abs(dx)>6)&&((x*7+y*3)%3===0)&&!(y>=25&&y<=26&&x>=17&&x<=22))P(x,y,1,1,C.bc);}
+  if(C.beard==='short'){const soft=mix(C.bc,S,.45);for(let y=18;y<31;y++)for(let x=11;x<30;x++){const dx=x-20,dy=y-20;if(dx*dx+dy*dy>72)continue;
+      const ad=Math.abs(dx),top=ad>=7?18:ad>=6?20:ad>=4?23:24;if(y<top)continue;const edge=y===top;P(x,y,1,1,edge?soft:((x*3+y)%5?C.bc:mix(C.bc,'#ffffff',.12)));}
+    P(16,23,8,1,soft);P(17,23,6,1,C.bc);P(16,25,1,1,'#8a4a40');P(17,25,6,1,'#9a5646');P(23,24,1,1,'#8a4a40');P(16,24,1,1,'#8a4a40');P(18,26,4,1,'#b87464');}
   if(C.beard==='chin'){P(18,27,4,2,C.bc);P(19,29,2,1,C.bc);}
   if(C.stache){P(14,23,12,2,C.stache);P(13,24,2,3,C.stache);P(25,24,2,3,C.stache);P(16,22,8,1,C.stache);}
   // glasses
@@ -626,7 +633,8 @@ function drawPortrait(c,C){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.
   if(!C.hat||C.hat==='ears'||C.hat==='cap'){
     switch(C.hs){
       case 'tail':case 'pony':case 'long':case 'bob':circ(P,20,18,9,(x,y)=>y<-4||(y<-1&&Math.abs(x)>5)||(y<3&&Math.abs(x)>7)?(x>4?H2:H):null);if(C.hs==='bob')P(12,13,9,2,H);break;
-      case 'curly':circ(P,20,16,10,(x,y)=>y<-2||(Math.abs(x)>7&&y<6)?(((x*5+y*3+99)%6)<1?H2:H):null);P(15,12,2,2,H);P(22,13,2,2,H);P(19,11,2,3,H2);break;
+      case 'curly':circ(P,20,16,9,(x,y)=>y<-4||(Math.abs(x)>7&&y<0)?((y%3===0&&(x+y+33)%4===0)?H2:H):null);
+        P(13,12,6,1,H);P(14,13,3,1,H);P(15,14,1,1,H);P(15,12,1,1,H2);P(23,12,3,1,H);break;
       case 'afro':circ(P,20,15,10,(x,y)=>y<-2||(Math.abs(x)>7&&y<4)?H:null);break;
       case 'braids':circ(P,20,18,9,(x,y)=>y<-4||(y<0&&Math.abs(x)>6)?((x+y+40)%2?H:H2):null);P(20,9,1,4,H2);break;
       case 'buzz':circ(P,20,18,9,(x,y)=>y<-5||(y<-2&&Math.abs(x)>6)?H:null);break;
