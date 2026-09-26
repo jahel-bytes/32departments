@@ -17,7 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Architecture (all in `index.html`)
 
 - **Rendering:** a 480×270 canvas (`W`,`H`) scaled with `image-rendering:pixelated`. `fit()` sets CSS var `--s`, and all DOM UI sizes use `calc(N * var(--u))` so the overlay scales with the canvas. Canvas draws the world. DOM (`#ui`) draws text-heavy panels: title, HUD, prompt, dialog, postcard, passport, fail, ending, and the `#twist` challenge banner.
-- **Pixel art is procedural.** There are no image assets. Sprites are built at startup with `spr(w,h,fn,outlineColor)` plus `outline()` (auto 1px outline), cached in `PROP` (`prop(key)`, `key` may be `name:variant`) and `LM` (`landmark(key,d)`). `PROP2` holds newer sprites (movers, canoe, maloca…); `prop()` falls through to it. The rider is `RIDER[0..3]` (`riderFrame`), and the map sprite is `MINI`. The in-canvas text is a custom 3×5 font (`txt`/`txt0` with a scale arg; `tw_`/`tw` measures width). Beware: local variables named `tw` (the challenge object) shadow the width helper, which is why `tw_` exists.
+- **Pixel art is procedural.** There are no image assets. Sprites are built at startup with `spr(w,h,fn,outlineColor)` plus `outline()` (auto 1px outline), cached in `PROP` (`prop(key)`, `key` may be `name:variant`) and `LM` (`landmark(key,d)`). `PROP2` holds newer sprites (movers, canoe, maloca…); `prop()` falls through to it. Riders live in `CHARS` (palette + flags: `hs` hair style, `hat`, `slv`, `pat`, `beard`, `glass`, `veh:'bike'`, `cat`). `setChar(C)` rebuilds `RIDER[0..3]` (`riderFrame(f,C)` + `riderHead`), the map sprite `MINI` (`miniFrame`) and the dialog portrait (`drawPortrait`), and updates rider-name text. The in-canvas text is a custom 3×5 font (`txt`/`txt0` with a scale arg; `tw_`/`tw` measures width). Beware: local variables named `tw` (the challenge object) shadow the width helper, which is why `tw_` exists.
 - **Map (`buildMap`)** is rasterized once:
   - Hand-typed lat/lon polygons (`COL` = Colombia, `SE`/`PAN` = neighbors) → `CLS` (0 sea, 1 Colombia, 2 other land).
   - Voronoi over each department's seed + capital → `DIDX` (department per pixel).
@@ -40,8 +40,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `updateRide` handles physics, collisions, `hurt()`, `failRide(title,msg)` and `arrive()`. The postcard appears, unless the Caldas quota isn't met.
   - `drawRideScene` draws the frame, and `drawRideHud` draws the in-canvas HUD.
   - The title screen reuses `startRide(meta, true)` as a demo, with no challenge.
-- **State machine:** the global `state` is one of title, dialog, map, passport, ferry, ride, postcard, fail, ending. `setState()` toggles DOM panels. `transition(mid)` does the iris wipe; game updates pause while `TR` is set. Input goes through `K` (held) and `JP` (just pressed, cleared each frame) via `KEYMAP` and touch buttons (`data-k`).
-- **Persistence:** `localStorage['bbt32']` holds `{v:[visited ids], intro, end}` (`SAVE`), wrapped in try/catch.
+- **State machine:** the global `state` is one of title, select (rider picker, reached from title or C on the map), dialog, map, passport, ferry, ride, postcard, fail, ending. `setState()` toggles DOM panels. `transition(mid)` does the iris wipe; game updates pause while `TR` is set. Input goes through `K` (held) and `JP` (just pressed, cleared each frame) via `KEYMAP` and touch buttons (`data-k`).
+- **Persistence:** `localStorage['bbt32']` holds `{v:[visited ids], intro, end, c:rider id}` (`SAVE`), wrapped in try/catch.
 - **Audio:** a WebAudio cumbia loop (`sched`) plus `SFX.*`. It starts on first input, M toggles music, and it suspends while the tab is hidden.
 
 ## Testing approach used so far

@@ -44,6 +44,19 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
 .credit{position:absolute;bottom:calc(6*var(--u));font-size:calc(9*var(--u));color:var(--ink-dim);text-shadow:var(--u) var(--u) 0 #000}
 .credit a{color:var(--jacket);pointer-events:auto}
 
+/* rider select */
+#select{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding-top:calc(8*var(--u));gap:calc(4*var(--u))}
+.selHead{font-size:calc(9*var(--u));color:var(--jacket);text-shadow:var(--u) var(--u) 0 #000}
+#chars{display:grid;grid-template-columns:repeat(9,calc(44*var(--u)));gap:calc(3*var(--u));pointer-events:auto}
+.ch{background:rgba(27,20,48,.88);box-shadow:0 0 0 var(--u) #06040d,inset 0 0 0 var(--u) #3b2f66;padding:calc(2*var(--u)) 0 calc(1*var(--u));text-align:center;cursor:pointer;font-size:calc(9*var(--u));color:var(--ink-dim)}
+.ch canvas{display:block;width:calc(34*var(--u));height:calc(34*var(--u));margin:0 auto;image-rendering:pixelated;background:linear-gradient(#5a4a8a,#8a6aa0)}
+.ch span{display:block;white-space:nowrap;overflow:hidden}
+.ch.on{box-shadow:0 0 0 var(--u) #06040d,inset 0 0 0 var(--u) var(--jacket);color:var(--jacket)}
+.ch.on canvas{background:linear-gradient(#f7a35c,#f7d27a)}
+#selInfo{width:calc(300*var(--u));text-align:center}
+#selName{font-size:calc(7*var(--u));color:#fff}
+#select .hint{margin-top:0;text-shadow:var(--u) var(--u) 0 #000}
+
 /* map hud */
 #hud .l{position:absolute;left:calc(6*var(--u));top:calc(6*var(--u));min-width:calc(104*var(--u))}
 #hud .brand{font-size:calc(6*var(--u));color:var(--jacket);margin-bottom:calc(3*var(--u))}
@@ -132,9 +145,16 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
     <section id="title">
       <div class="logo">BROKEN BOOTS<small>32 DEPARTAMENTOS</small></div>
       <div class="tricolor"><i></i><i></i><i></i></div>
-      <div class="sub">Ride with Ginna and her moto Kali across every department of Colombia.</div>
+      <div class="sub">Pick your rider and cross every department of Colombia.</div>
       <div class="blink" id="startTxt">PRESS ENTER</div>
       <div class="credit">A fan game inspired by <a href="https://brokenbootstravel.com/" target="_blank" rel="noopener">brokenbootstravel.com</a> · Explore until your boots wear out.</div>
+    </section>
+
+    <section id="select" hidden>
+      <div class="selHead px">CHOOSE YOUR RIDER</div>
+      <div id="chars"></div>
+      <div id="selInfo" class="panel"><div class="px" id="selName"></div></div>
+      <div class="hint">ARROWS · CHOOSE &nbsp;&nbsp; ENTER · RIDE &nbsp;&nbsp; ESC · BACK</div>
     </section>
 
     <div id="hud" hidden>
@@ -148,11 +168,11 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
     </div>
     <div id="banner" hidden></div>
     <div id="prompt" hidden></div>
-    <div id="help" hidden>ARROWS / WASD ride · ENTER explore · P passport · M music</div>
+    <div id="help" hidden>ARROWS / WASD ride · ENTER explore · P passport · C rider · M music</div>
 
     <div id="dialog" class="panel" hidden>
       <canvas id="portrait" width="42" height="42"></canvas>
-      <div><div class="who px">GINNA</div><p id="dtext"></p></div>
+      <div><div class="who px" id="who">GINNA</div><p id="dtext"></p></div>
       <span class="next">▼</span>
     </div>
 
@@ -171,7 +191,7 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
     </div>
 
     <div id="passport" class="card" hidden>
-      <header><h2>PASAPORTE DE GINNA</h2><span id="ppCount"></span></header>
+      <header><h2 id="ppTitle">PASAPORTE DE GINNA</h2><span id="ppCount"></span></header>
       <div id="grid"></div>
       <footer><span>P / ESC · close</span><button id="resetBtn" type="button">Reset progress</button></footer>
     </div>
@@ -185,7 +205,7 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
 
     <div id="ending" class="panel center" hidden>
       <h2>32 / 32<br>BOOTS: OFFICIALLY BROKEN</h2>
-      <p>Every department. Every pothole. Every tinto. Ginna and Kali rode the whole of Colombia.</p>
+      <p id="endTxt">Every department. Every pothole. Every tinto. Ginna and Kali rode the whole of Colombia.</p>
       <p>“Explore until your boots wear out.” Worn boots are proof of a life well lived.</p>
       <p>Watch the real journey at <a href="https://brokenbootstravel.com/32-depts-of-colombia/" target="_blank" rel="noopener">brokenbootstravel.com</a></p>
       <div class="hint">ENTER · KEEP RIDING</div>
@@ -199,6 +219,7 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
     <span></span><button data-k="down">▼</button><span></span>
   </div>
   <div class="ab">
+    <button class="sm" data-k="char">WHO</button>
     <button class="sm" data-k="pass">PASS</button>
     <button class="sm" data-k="ferry">FERRY</button>
     <button data-k="ok">A</button>
@@ -330,7 +351,7 @@ const SFX={
 
 /* ---------------- input ---------------- */
 const K={},JP={};
-const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',Space:'jump',Enter:'ok',NumpadEnter:'ok',KeyE:'ok',KeyP:'pass',Tab:'pass',Escape:'back',KeyM:'music',KeyF:'ferry'};
+const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',Space:'jump',Enter:'ok',NumpadEnter:'ok',KeyE:'ok',KeyP:'pass',Tab:'pass',Escape:'back',KeyM:'music',KeyF:'ferry',KeyC:'char'};
 addEventListener('keydown',e=>{const k=KEYMAP[e.code];if(!k)return;e.preventDefault();audioInit();if(!K[k])JP[k]=true;K[k]=true;});
 addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)K[k]=false;});
 addEventListener('blur',()=>{for(const k in K)K[k]=false;});
@@ -349,87 +370,285 @@ const okP=()=>JP.ok||JP.jump;
    SPRITES
    ================================================================ */
 const OL='#1a1326';
-// Ginna on Kali, side view. 4 frames.
-function riderFrame(f){
+// Playable riders. Each is a palette plus a few feature flags that the sprite builders read.
+// hs = hair style, hat = headwear, slv = sleeves, pat = shirt pattern, veh = vehicle.
+const CHARS=[
+ {id:'ginna',name:'Ginita',nick:'Ginna',skin:'#e2a77f',sk2:'#c4865f',neck:'#c98a64',hair:'#4a2c1f',hr2:'#5e3a28',hs:'tail',hat:'beanie',top:'#f5c02e',tp2:'#c98f16',tp3:'#ffe07a',cuff:'#e3a91f',slv:'long',jacket:1,gloves:1,bot:'#2f3b5c',bt2:'#45538a',shoe:'#6b4226',boot:1},
+ {id:'jahel',name:'Jahelcito',skin:'#d9a07a',sk2:'#b5805c',hair:'#3b2517',hr2:'#23140c',hs:'curly',top:'#737c58',tp2:'#586044',tp3:'#8e9870',slv:'short',bot:'#1d1c22',bt2:'#34333c',shorts:1,shoe:'#26252b',beard:'stub',bc:'#6a4630'},
+ {id:'meg',name:'Meg',skin:'#f2c7a8',sk2:'#d8a686',hair:'#d9b56c',hr2:'#b08a48',hs:'long',len:5,top:'#f1ece2',tp2:'#d6cfc0',tp3:'#ffffff',pat:'stripe',patC:'#6e2a3c',patC2:'#e0a830',slv:'short',bot:'#3d4d70',bt2:'#56679a',shoe:'#e8e4dc'},
+ {id:'gatewood',name:'Grandma Gatewood',short:'Grandma',skin:'#f1cdb8',sk2:'#d6ab94',hair:'#f2f2f2',hr2:'#c9c9cc',brow:'#b8b0a8',hs:'short',hat:'bucket',hatC:'#5c6064',hatC2:'#42464a',glass:'#f0a22a',gfr:'#c07a20',lensA:.85,top:'#bcd6de',tp2:'#95b4be',tp3:'#dcebf0',pat:'open',patC:'#2b62b8',slv:'long',bot:'#8a8474',bt2:'#a39d8c',shoe:'#6a5846'},
+ {id:'juli',name:'Juli',skin:'#e3aa88',sk2:'#c48a68',hair:'#6a4428',hs:'bald',glass:'#bcd4e0',gfr:'#d62828',lensA:.35,stache:'#6a4428',beard:'stub',bc:'#a8785c',top:'#3a3a48',tp2:'#e8e4dc',tp3:'#55556a',pat:'plaid',slv:'long',bot:'#2f3b5c',bt2:'#45538a',shoe:'#5a3a22'},
+ {id:'claire',name:'Claire',skin:'#ebbd98',sk2:'#cf9d78',hair:'#6e4128',hr2:'#51301c',hs:'long',len:8,top:'#efe2dc',tp2:'#d8c6be',tp3:'#ffffff',pat:'floral',patC:'#d8486a',patC2:'#6a8a4a',slv:'tank',crop:1,bot:'#8fb3d6',bt2:'#b0cde8',shorts:1,shoe:'#ece8e0'},
+ {id:'jp',name:'JP',skin:'#e6ad8c',sk2:'#c78d6c',hair:'#6e5a48',hs:'bald',beard:'full',bc:'#7e6c5c',top:'#f2f2f0',tp2:'#d4d4d2',tp3:'#ffffff',slv:'short',bot:'#2c2c34',bt2:'#44444e',shoe:'#3a3a40'},
+ {id:'ross',name:'Ross',skin:'#ebb895',sk2:'#cc9874',hair:'#7a5438',hs:'bald',beard:'stub',bc:'#9a6e50',top:'#4d5864',tp2:'#3a434e',tp3:'#66727e',slv:'short',bot:'#2a2a30',bt2:'#3e3e46',shoe:'#1e1e22',veh:'bike'},
+ {id:'kelly',name:'Kelly',skin:'#e9b793',sk2:'#cb976f',hair:'#3e2616',hr2:'#2a180c',hs:'pony',top:'#e595ac',tp2:'#c5738c',tp3:'#f5b8c8',slv:'tank',crop:1,build:'bulk',bot:'#232228',bt2:'#3a3942',shoe:'#ece8e0'},
+ {id:'carmelo',name:'Carmelo',skin:'#5b3524',sk2:'#43251a',hair:'#e2d3a4',hr2:'#b49f6c',brow:'#2a1810',hs:'braids',top:'#1f1d24',tp2:'#131216',tp3:'#3a3742',pat:'lace',slv:'long',build:'slim',bot:'#2c2a34',bt2:'#44404e',shoe:'#ece8e0',lip:'#7a3a30',lip2:'#94504a',blush:'#6e3a2c'},
+ {id:'xiomara',name:'Xiomara',skin:'#c3845c',sk2:'#a26744',hair:'#1b1515',hr2:'#342828',hs:'afro',top:'#e6c4c8',tp2:'#c7a0a6',tp3:'#f6e0e2',slv:'short',bot:'#2f3b5c',bt2:'#45538a',shoe:'#8a4a2a',lip:'#a04a3e',blush:'#b86a54'},
+ {id:'guss',name:'Guss',cat:1,fur:'#e38b3b',fur2:'#b9662a',fur3:'#f6b474',white:'#f5ede0'},
+ {id:'sheridan',name:'Sheridan',skin:'#eab99c',sk2:'#cc9a7e',hair:'#6c5140',hr2:'#8e7c6c',hs:'bob',glass:'#c9d8e0',gfr:'#3a2424',lensA:.3,top:'#1f1d24',tp2:'#131216',tp3:'#34313c',pat:'open',patC:'#2a3150',patC2:'#e08aa0',slv:'long',bot:'#2c2c34',bt2:'#44444e',shoe:'#3a2a20'},
+ {id:'debora',name:'Debora',skin:'#f0c1a2',sk2:'#d4a182',hair:'#6d4a2e',hr2:'#50341e',hs:'pony',hat:'cap',hatC:'#bdb49c',hatC2:'#8f876f',top:'#1f1d24',tp2:'#131216',tp3:'#3a3742',slv:'tank',bot:'#80848c',bt2:'#9a9ea6',shorts:1,shoe:'#ece8e0'},
+ {id:'enrique',name:'Enrique',skin:'#4b2c1d',sk2:'#361e12',hair:'#141010',hs:'buzz',beard:'chin',bc:'#141010',top:'#f3d21e',tp2:'#c9a90e',tp3:'#fff07a',pat:'polo',slv:'short',bot:'#1f2a4a',bt2:'#2e3c66',shoe:'#161618',lip:'#6e3228',lip2:'#8a4a40',blush:'#5e3022'},
+ {id:'juls',name:'Juls',skin:'#f1c6aa',sk2:'#d6a68a',hair:'#d6b06e',hr2:'#b08a4c',hs:'bob',hat:'ears',top:'#d72b2b',tp2:'#a81e1e',tp3:'#f05050',pat:'mickey',slv:'short',bot:'#3d4d70',bt2:'#56679a',shoe:'#f3d21e'},
+ {id:'rayna',name:'Rayna',skin:'#f1c9b2',sk2:'#d6a992',hair:'#e3c585',hr2:'#bc9c5c',hs:'long',len:9,build:'slim',top:'#1f1d24',tp2:'#131216',tp3:'#34313c',slv:'long',bot:'#4a5f86',bt2:'#6379a6',shoe:'#ece8e0'},
+];
+CHARS.forEach(C=>{C.nick=C.nick||C.name;C.short=C.short||C.name;C.lip=C.lip||'#b0544a';C.lip2=C.lip2||'#d77a6a';C.blush=C.blush||'#ec8f7f';C.neck=C.neck||C.sk2;C.brow=C.brow||C.hair;C.hr2=C.hr2||C.hair;C.cuff=C.cuff||C.tp2;C.sole=C.sole||mix(C.shoe||'#888888','#ffffff',.35);C.len=C.len||6;});
+const charById=id=>CHARS.find(c=>c.id===id)||CHARS[0];
+
+// Rider on the vehicle, side view. 4 frames.
+function riderFrame(f,C){
   const[c,g]=mk(42,41);const ox=3,oy=9;
-  const P=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(ox+x,oy+y,w,h);};
-  // small scooter mag wheels
-  const wheel=(cx,cy)=>{for(let dy=-5;dy<=5;dy++)for(let dx=-5;dx<=5;dx++){const d=Math.hypot(dx,dy);let col=null;
-    if(d<=4.6&&d>2.9)col=d>3.9?'#1a161e':'#34303a';else if(d<=2.9&&d>2.2)col='#8d949e';else if(d<=1.1)col='#d6dbe2';
-    else if(d<=2.2){const a=Math.atan2(dy,dx)+f*Math.PI/10;const q=Math.PI*2/5,m=((a%q)+q)%q;col=(m<.5||m>q-.5)?'#b3bac3':'#4a4f57';}
-    if(col)P(cx+dx,cy+dy,1,1,col);}};
-  const b=(f===1||f===2)?1:0;
+  const P=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(ox+Math.round(x),oy+Math.round(y),w,h);};
+  const L=(x0,y0,x1,y1,w,col)=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++)P(x0+(x1-x0)*i/n,y0+(y1-y0)*i/n,w,w,col);};
+  const bike=C.veh==='bike';
+  const b=!bike&&(f===1||f===2)?1:0;
   const BK='#18171d',BK2='#2a2932',HI='#4f4e5c',TRIM='#a9b0ba';
-  wheel(9,25);wheel(29,25);
-  // engine / CVT case + exhaust
-  P(7,22,9,3,'#4f545d');P(8,22,7,1,'#6d737c');P(2,24,7,2,'#b9bec6');P(2,24,7,1,'#eef1f4');P(1,24,2,2,'#4a4f57');
-  // rear body cowl (black) with silver trim and red AKT badge
-  P(5,15,11,1,HI);for(let y=16;y<=20;y++)P(3,y,15,1,y===16?BK2:BK);P(6,21,11,1,BK);P(4,17,1,3,BK2);
-  P(4,18,13,1,TRIM);P(7,19,3,1,'#d9312a');P(11,19,1,1,'#d9312a');P(2,16,1,2,'#ff4a4a');
-  // rear rack + duffel
-  P(1,14,6,1,'#5a606a');P(0,10,7,4,'#5f6e3c');P(0,10,7,1,'#7e8f52');P(3,10,1,4,'#3e4826');
-  // seat
-  P(5,13,12,2,'#2a2530');P(5,13,12,1,'#4a4256');
-  // floorboard
-  P(16,21,9,2,BK);P(16,21,9,1,'#6d737c');
-  // Ginna: thigh, shin, broken boot on the floorboard
-  P(11,11+b,8,3,'#2f3b5c');P(11,11+b,8,1,'#45538a');P(18,13+b,2,6-b,'#2f3b5c');
-  P(17,18,4,3,'#6b4226');P(17,18,4,1,'#8a5a36');P(17,20,5,1,'#3b2414');P(19,19,1,1,'#d8a878');
-  // leg shield / front apron
-  for(let y=9;y<=22;y++){const x0=23+Math.round((22-y)/6);P(x0,y,3,1,BK);P(x0+2,y,1,1,y<12?HI:BK2);}
-  P(23,20,2,1,TRIM);
-  // fork + front fender
-  for(let y=14;y<=24;y++){const x=27+Math.round((y-14)/5);P(x,y,1,1,'#d4d9e0');}
-  P(26,19,6,2,BK);P(26,19,6,1,HI);
-  // yellow jacket torso (upright)
-  for(let i=0;i<10;i++){const y=2+b+i,x0=11+Math.floor((9-i)/5);P(x0,y,5,1,'#f5c02e');P(x0,y,1,1,'#c98f16');P(x0+4,y,1,1,'#ffe07a');}
-  P(11,8+b,5,1,'#dfe6ea');P(13,2+b,3,1,'#d9a31f');
-  // arm to the grips
-  P(15,4+b,3,2,'#f5c02e');P(17,5+b,3,2,'#f5c02e');P(19,6,3,2,'#e3a91f');P(22,6,2,2,'#2a2530');
+  if(bike){
+    // thin spoked bicycle wheels
+    const wheel=(cx,cy)=>{for(let dy=-6;dy<=6;dy++)for(let dx=-6;dx<=6;dx++){const d=Math.hypot(dx,dy);let col=null;
+      if(d<=6.2&&d>4.9)col=d>5.6?'#141318':'#2e2c34';else if(d<=4.9&&d>4.2)col='#6d737c';else if(d<=1.2)col='#c9ced6';
+      else if(d<4.2){const a=Math.atan2(dy,dx)+f*Math.PI/8;const q=Math.PI/4,m=((a%q)+q)%q;if(m<.22||m>q-.22)col='#8d949e';}
+      if(col)P(cx+dx,cy+dy,1,1,col);}};
+    wheel(9,24);wheel(29,24);
+    // pedalling legs: 2-bone IK from the hip to each pedal
+    const a=f*Math.PI/2,pn=[18+Math.round(Math.cos(a)*3),25+Math.round(Math.sin(a)*3)],pf=[18-Math.round(Math.cos(a)*3),25-Math.round(Math.sin(a)*3)];
+    const leg=([fx,fy],dark)=>{const hx=13,hy=12,A=9,B2=9;const dx=fx-hx,dy=fy-hy,d=Math.min(Math.hypot(dx,dy),A+B2-.5);const an=Math.atan2(dy,dx),k=Math.acos((A*A+d*d-B2*B2)/(2*A*d));
+      const kx=hx+Math.cos(an-k)*A,ky=hy+Math.sin(an-k)*A;const t=dark?mix(C.bot,'#000000',.35):C.bot,s=C.shorts?(dark?C.sk2:C.skin):t;
+      L(hx,hy,kx,ky,2,t);L(kx,ky,fx,fy-1,2,s);P(fx-1,fy-1,4,2,dark?mix(C.shoe,'#000000',.3):C.shoe);};
+    leg(pf,1);
+    // black frame, chainring, saddle, bars
+    L(9,24,18,25,1,BK);L(9,24,14,14,1,BK);L(18,25,14,13,1,BK);L(14,14,25,13,1,BK);L(15,13,24,12,1,HI);L(18,25,26,15,1,BK);L(26,13,29,24,1,BK2);
+    L(25,13,24,8,1,BK);P(21,7,5,1,BK);P(25,6,1,2,TRIM);
+    circ(P,18,25,2,(x,y)=>x*x+y*y<2?'#c9ced6':'#6d737c');L(18,25,pn[0],pn[1],1,'#c9ced6');
+    P(10,12,7,2,'#2a2530');P(10,12,7,1,'#4a4256');
+    leg(pn,0);
+  }else{
+    // small scooter mag wheels
+    const wheel=(cx,cy)=>{for(let dy=-5;dy<=5;dy++)for(let dx=-5;dx<=5;dx++){const d=Math.hypot(dx,dy);let col=null;
+      if(d<=4.6&&d>2.9)col=d>3.9?'#1a161e':'#34303a';else if(d<=2.9&&d>2.2)col='#8d949e';else if(d<=1.1)col='#d6dbe2';
+      else if(d<=2.2){const a=Math.atan2(dy,dx)+f*Math.PI/10;const q=Math.PI*2/5,m=((a%q)+q)%q;col=(m<.5||m>q-.5)?'#b3bac3':'#4a4f57';}
+      if(col)P(cx+dx,cy+dy,1,1,col);}};
+    wheel(9,25);wheel(29,25);
+    // engine / CVT case + exhaust
+    P(7,22,9,3,'#4f545d');P(8,22,7,1,'#6d737c');P(2,24,7,2,'#b9bec6');P(2,24,7,1,'#eef1f4');P(1,24,2,2,'#4a4f57');
+    // rear body cowl (black) with silver trim and red AKT badge
+    P(5,15,11,1,HI);for(let y=16;y<=20;y++)P(3,y,15,1,y===16?BK2:BK);P(6,21,11,1,BK);P(4,17,1,3,BK2);
+    P(4,18,13,1,TRIM);P(7,19,3,1,'#d9312a');P(11,19,1,1,'#d9312a');P(2,16,1,2,'#ff4a4a');
+    // rear rack + duffel
+    P(1,14,6,1,'#5a606a');P(0,10,7,4,'#5f6e3c');P(0,10,7,1,'#7e8f52');P(3,10,1,4,'#3e4826');
+    // seat
+    P(5,13,12,2,'#2a2530');P(5,13,12,1,'#4a4256');
+    // floorboard
+    P(16,21,9,2,BK);P(16,21,9,1,'#6d737c');
+    // thigh, shin, shoe on the floorboard
+    if(!C.cat){
+      P(11,11+b,8,3,C.bot);P(11,11+b,8,1,C.bt2);if(C.shorts){P(16,11+b,3,3,C.skin);P(16,13+b,3,1,C.sk2);}
+      P(18,13+b,2,6-b,C.shorts?C.skin:C.bot);
+      if(C.boot){P(17,18,4,3,C.shoe);P(17,18,4,1,'#8a5a36');P(17,20,5,1,'#3b2414');P(19,19,1,1,'#d8a878');}
+      else{P(17,18,3,1,C.shoe);P(17,19,4,1,C.shoe);P(17,20,5,1,C.sole);}
+    }
+    // leg shield / front apron
+    for(let y=9;y<=22;y++){const x0=23+Math.round((22-y)/6);P(x0,y,3,1,BK);P(x0+2,y,1,1,y<12?HI:BK2);}
+    P(23,20,2,1,TRIM);
+    // fork + front fender
+    for(let y=14;y<=24;y++){const x=27+Math.round((y-14)/5);P(x,y,1,1,'#d4d9e0');}
+    P(26,19,6,2,BK);P(26,19,6,1,HI);
+  }
+  const fl=f%2;
+  if(C.cat){
+    // Guss: an orange tabby sitting upright on the seat, paws on the grips
+    const F=C.fur,F2=C.fur2,F3=C.fur3,Wt=C.white;
+    [[10,12],[9,11],[8,10],[7,9],[7,8],[8,7-fl]].forEach(([x,y],i)=>P(x,y+b,2,1,i%2?F2:F));
+    circ(P,13,8+b,4,(x,y)=>x>1&&y>-2?F3:((y+8)%3===0&&x<1)?F2:F);
+    P(16,10+b,2,10-b,F);P(16,10+b,1,10-b,F2);P(16,19,3,2,Wt);
+    P(15,4+b,3,2,F);P(17,5+b,3,2,F);P(19,6,3,2,F);P(22,6,2,2,Wt);
+    circ(P,17,0+b,3,(x,y)=>y>0&&x>0?Wt:(y<-1&&(x+9)%2===0)?F2:F);
+    P(14,-5+b,2,2,F);P(14,-6+b,1,1,F);P(18,-5+b,2,2,F);P(19,-6+b,1,1,F);P(15,-4+b,1,1,'#e89a8a');P(18,-4+b,1,1,'#e89a8a');
+    P(18,-1+b,1,1,'#3a7a2a');P(20,0+b,1,1,'#e87a8a');P(21,1+b,2,1,'#fff6ea');
+  }else{
+    // torso, leaning slightly back into the seat
+    const tw0=C.build==='bulk'?6:C.build==='slim'?4:5,sx=tw0>5?-1:0;
+    for(let i=0;i<10;i++){const y=2+b+i,x0=11+Math.floor((9-i)/5)+sx;const mid=C.crop&&i>=7;
+      let col=C.top;if(C.pat==='stripe'&&i%3===1)col=i%6===4?C.patC2:C.patC;else if(C.pat==='plaid'&&i%2)col=C.tp3;
+      if(mid){P(x0,y,tw0,1,i===7?C.sk2:C.skin);continue;}
+      P(x0,y,tw0,1,col);P(x0,y,1,1,C.tp2);P(x0+tw0-1,y,1,1,C.tp3);
+      if(C.pat==='floral'&&i%3===0)P(x0+1+(i%2),y,1,1,C.patC);if(C.pat==='floral'&&i%3===2)P(x0+3,y,1,1,C.patC2);
+      if(C.pat==='plaid'&&i%2===0)P(x0+2,y,1,1,C.tp2);
+      if(C.pat==='lace'&&(i%2))P(x0+1+(i>>1)%2,y,1,1,C.tp3);
+      if(C.pat==='open'){P(x0+tw0-2,y,1,1,C.patC);if(C.patC2&&i%3===1)P(x0+tw0-2,y,1,1,C.patC2);}
+      if(C.slv==='tank'&&i===0){P(x0,y,tw0,1,C.skin);P(x0+2,y,1,1,C.top);}}
+    if(C.pat==='mickey'){const k='#1a1418';P(12+sx,5+b,1,1,k);P(14+sx,5+b,1,1,k);P(13+sx,6+b,1,1,k);P(12+sx,6+b,1,1,k);P(14+sx,6+b,1,1,k);P(13+sx,7+b,1,1,k);}
+    if(C.jacket){P(11,8+b,5,1,'#dfe6ea');P(13,2+b,3,1,'#d9a31f');}
+    else if(C.pat==='polo'){P(13,2+b,3,1,C.tp3);P(15,3+b,1,2,C.tp2);}
+    else if(C.slv!=='tank')P(14,2+b,2,1,C.skin);
+    // arm to the grips
+    const up=C.slv==='tank'?C.skin:C.top,fore=C.slv==='long'?C.top:C.skin;
+    if(C.build==='bulk'){P(14,3+b,4,3,up);P(15,6+b,2,1,C.sk2);}
+    P(15,4+b,3,2,up);P(17,5+b,3,2,fore);P(19,6,3,2,C.slv==='long'?C.cuff:C.skin);P(22,6,2,2,C.gloves?'#2a2530':C.skin);
+  }
   // handlebar cowl, headlight, mirror
-  P(22,7,7,3,BK);P(22,7,7,1,HI);P(28,8,2,2,'#fff3b0');P(24,4,1,3,'#5a606a');P(23,3,3,1,TRIM);
-  // head
-  P(13,-2+b,2,4,'#4a2c1f');
-  P(14,-3+b,5,5,'#e2a77f');P(14,0+b,1,2,'#c4865f');P(17,-1+b,1,1,'#2a1a1a');P(19,-1+b,1,1,'#e2a77f');P(17,1+b,2,1,'#b0544a');P(16,0+b,1,1,'#ec8f7f');
-  const fl=f%2;P(10,-1+b+fl,3,2,'#4a2c1f');P(8,0+b+(1-fl),2,1,'#5e3a28');
-  // gray beanie for the cold
-  P(13,-5+b,6,2,'#8a8f98');P(14,-6+b,4,1,'#8a8f98');P(13,-5+b,1,2,'#6b7079');P(17,-6+b,1,1,'#a9aeb6');
-  P(13,-3+b,6,1,'#b1b5bd');P(14,-3+b,1,1,'#8a8f98');P(16,-3+b,1,1,'#8a8f98');P(18,-3+b,1,1,'#8a8f98');
-  P(15,-8+b,2,2,'#cfd2d8');
+  if(!bike){P(22,7,7,3,BK);P(22,7,7,1,HI);P(28,8,2,2,'#fff3b0');P(24,4,1,3,'#5a606a');P(23,3,3,1,TRIM);}
+  if(!C.cat)riderHead(P,C,b,fl);
   return outline(c,OL);
 }
-const RIDER=[0,1,2,3].map(riderFrame);
 
-function miniFrame(f){return spr(20,18,(P0)=>{const P=(x,y,w,h,c)=>P0(x,y+3,w,h,c);const b=f%2;
-  for(const cx of[4,15]){P(cx-2,11,5,2,'#1a161e');P(cx-1,10,3,4,'#1a161e');P(cx,11,1,1,b?'#c9ced6':'#6d737c');}
-  P(0,4,3,3,'#5f6e3c');P(2,7,9,3,'#18171d');P(3,8,7,1,'#a9b0ba');P(4,9,1,1,'#d9312a');P(1,7,1,1,'#ff4a4a');
-  P(3,6,6,1,'#2a2530');P(9,10,5,1,'#18171d');P(13,3,2,8,'#18171d');P(14,3,1,2,'#4f4e5c');P(12,2,4,1,'#18171d');P(16,2,1,1,'#fff3b0');
-  P(10,8,3,2,'#6b4226');P(6,5+b,5,2,'#2f3b5c');P(6,0+b,3,5,'#f5c02e');P(6,0+b,1,5,'#c98f16');P(9,1+b,3,2,'#f5c02e');
-  P(7,-3+b,3,3,'#e2a77f');P(9,-2+b,1,1,'#2a1a1a');P(6,-2+b,1,2,'#4a2c1f');P(7,-4+b,3,1,'#8a8f98');P(6,-3+b,4,1,'#b1b5bd');P(8,-5+b,1,1,'#cfd2d8');
-},OL);}
-const MINI=[0,1].map(miniFrame);
-
-function portrait(){const c=$('portrait'),g=c.getContext('2d');g.imageSmoothingEnabled=false;
-  const P=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x+1,y+1,w,h);};
-  // hair back
-  P(9,12,22,24,'#4a2c1f');P(8,20,3,18,'#4a2c1f');P(29,20,3,18,'#3a2016');
-  // jacket
-  P(4,32,32,8,'#f5c02e');P(4,32,6,8,'#c98f16');P(30,32,6,8,'#ffe07a');P(13,30,14,4,'#d9a31f');P(19,32,2,8,'#8a8f98');P(4,37,32,1,'#dfe6ea');
-  // neck
-  P(16,26,8,5,'#c98a64');
+// Side-view head, facing right. Face block is 5x5 at (14,-3).
+function riderHead(P,C,b,fl){const y=b,H=C.hair,H2=C.hr2,S=C.skin,S2=C.sk2;
+  // hair behind the head
+  switch(C.hs){
+    case 'tail':case 'pony':P(13,-2+y,2,4,H);P(10,-1+y+fl,3,2,H);P(8,0+y+(1-fl),2,1,H2);break;
+    case 'long':P(12,-3+y,3,C.len,H);P(12,-3+y,1,C.len,H2);P(11-fl,-5+y+C.len,2,2,H);break;
+    case 'bob':P(12,-3+y,3,5,H);P(13,-3+y,1,4,H2);break;
+    case 'curly':P(11,-4+y,4,6,H);P(10,-2+y+fl,1,2,H);[[11,-3],[13,-1],[12,1],[11,0]].forEach(([x,yy])=>P(x,yy+y,1,1,H2));break;
+    case 'afro':circ(P,13,-3+y,5,(x,yy)=>((x*3+yy*5+40)%7)===0?H2:H);break;
+    case 'braids':P(12,-3+y,3,2,H);for(let k=0;k<4;k++)for(let j=0;j<11-k;j++)P(10+k-(j>6?fl:0),-3+y+j,1,1,(j+k)%2?H:H2);break;
+    case 'short':P(13,-2+y,2,3,H);P(12,0+y,1,2,H2);break;
+    default:P(13,-2+y,1,3,S2);
+  }
   // face
-  circ(P,20,20,8,(x,y)=>x>5?'#c4865f':'#e2a77f');
+  P(14,-3+y,5,5,S);P(14,0+y,1,2,S2);P(17,-1+y,1,1,'#2a1a1a');P(19,-1+y,1,1,S);P(17,1+y,2,1,C.lip);if(!C.beard)P(16,0+y,1,1,C.blush);
+  // hair on top
+  switch(C.hs){
+    case 'tail':case 'pony':case 'long':case 'bob':P(13,-4+y,6,1,H);P(13,-3+y,4,1,H);if(C.hs==='bob')P(13,-2+y,2,2,H);break;
+    case 'curly':P(12,-5+y,7,2,H);P(13,-3+y,3,1,H);P(18,-3+y,1,1,H);P(13,-6+y,1,1,H);P(15,-6+y,2,1,H);P(18,-6+y,1,1,H);P(14,-5+y,1,1,H2);P(17,-4+y,1,1,H2);break;
+    case 'afro':P(13,-4+y,6,1,H);P(13,-3+y,3,1,H);break;
+    case 'braids':P(13,-4+y,6,1,H);P(13,-3+y,3,1,H);P(15,-4+y,1,1,H2);P(17,-4+y,1,1,H2);break;
+    case 'buzz':P(14,-4+y,5,1,H);P(13,-3+y,3,1,H);P(13,-2+y,1,2,H);break;
+    case 'bald':P(14,-4+y,4,1,S);P(15,-4+y,2,1,mix(S,'#ffffff',.35));break;
+  }
+  if(['bald','buzz','short','pony'].includes(C.hs))P(15,-1+y,1,2,S2);
+  // facial hair
+  if(C.beard==='stub'){P(15,1+y,2,1,C.bc);P(14,0+y,1,1,C.bc);P(16,0+y,1,1,C.bc);P(19,1+y,1,1,C.bc);P(17,2+y,2,1,C.bc);}
+  if(C.beard==='full'){P(14,-1+y,1,3,C.bc);P(15,0+y,5,3,C.bc);P(16,3+y,3,1,C.bc);P(17,1+y,2,1,C.lip);}
+  if(C.beard==='chin')P(17,2+y,2,1,C.bc);
+  if(C.stache){P(16,0+y,4,1,C.stache);P(16,1+y,1,1,C.stache);P(19,1+y,1,1,C.stache);}
+  // glasses
+  if(C.glass){P(16,-1+y,3,1,C.glass);P(16,-2+y,3,1,C.gfr);P(14,-2+y,2,1,C.gfr);if(C.lensA<.5)P(17,-1+y,1,1,'#2a1a1a');}
+  // headwear
+  if(C.hat==='beanie'){
+    P(13,-5+y,6,2,'#8a8f98');P(14,-6+y,4,1,'#8a8f98');P(13,-5+y,1,2,'#6b7079');P(17,-6+y,1,1,'#a9aeb6');
+    P(13,-3+y,6,1,'#b1b5bd');P(14,-3+y,1,1,'#8a8f98');P(16,-3+y,1,1,'#8a8f98');P(18,-3+y,1,1,'#8a8f98');
+    P(15,-8+y,2,2,'#cfd2d8');}
+  if(C.hat==='bucket'){P(13,-7+y,6,3,C.hatC);P(14,-7+y,4,1,mix(C.hatC,'#ffffff',.25));P(13,-5+y,6,1,C.hatC2);P(11,-4+y,10,1,C.hatC2);P(11,-3+y,1,1,C.hatC2);P(20,-3+y,1,1,C.hatC2);}
+  if(C.hat==='cap'){P(13,-6+y,6,2,C.hatC);P(14,-6+y,4,1,mix(C.hatC,'#ffffff',.3));P(19,-4+y,3,1,C.hatC2);P(13,-4+y,6,1,C.hatC2);}
+  if(C.hat==='ears'){const k='#1a1418';P(14,-5+y,5,1,k);P(12,-8+y,3,3,k);P(16,-8+y,3,3,k);P(15,-6+y,2,1,'#d72b2b');}
+}
+
+// Map token: rider seen from the side, 2 frames.
+function miniFrame(f,C){return spr(20,18,(P0)=>{const P=(x,y,w,h,c)=>P0(x,y+3,w,h,c);const b=f%2;
+  const L=(x0,y0,x1,y1,col)=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++)P(Math.round(x0+(x1-x0)*i/n),Math.round(y0+(y1-y0)*i/n),1,1,col);};
+  if(C.veh==='bike'){
+    for(const cx of[4,15]){P(cx-2,9,5,1,'#1a161e');P(cx-2,15,5,1,'#1a161e');P(cx-3,10,1,5,'#1a161e');P(cx+3,10,1,5,'#1a161e');P(cx,12,1,1,b?'#c9ced6':'#6d737c');}
+    L(4,12,9,12,'#18171d');L(4,12,7,7,'#18171d');L(9,12,7,6,'#18171d');L(7,7,13,6,'#18171d');L(9,12,13,7,'#18171d');L(13,6,15,12,'#18171d');L(13,6,12,3,'#18171d');P(11,3,3,1,'#18171d');
+    P(5,6,4,1,'#2a2530');
+    P(6,5+b,4,2,C.bot);P(9,6+b,2,5-b,C.shorts?C.skin:C.bot);P(9+b,11,3,1,C.shoe);
+  }else{
+    for(const cx of[4,15]){P(cx-2,11,5,2,'#1a161e');P(cx-1,10,3,4,'#1a161e');P(cx,11,1,1,b?'#c9ced6':'#6d737c');}
+    P(0,4,3,3,'#5f6e3c');P(2,7,9,3,'#18171d');P(3,8,7,1,'#a9b0ba');P(4,9,1,1,'#d9312a');P(1,7,1,1,'#ff4a4a');
+    P(3,6,6,1,'#2a2530');P(9,10,5,1,'#18171d');P(13,3,2,8,'#18171d');P(14,3,1,2,'#4f4e5c');P(12,2,4,1,'#18171d');P(16,2,1,1,'#fff3b0');
+    if(!C.cat){P(10,8,3,2,C.shoe);P(6,5+b,5,2,C.bot);if(C.shorts)P(9,5+b,2,2,C.skin);}
+  }
+  if(C.cat){P(4,3+b,2,1,C.fur2);P(3,2+b,1,1,C.fur);P(6,1+b,4,5,C.fur);P(8,2+b,2,4,C.fur3);P(9,1+b,3,2,C.fur);
+    P(7,-3+b,4,3,C.fur);P(7,-4+b,1,1,C.fur);P(10,-4+b,1,1,C.fur);P(10,-2+b,1,1,'#3a7a2a');P(9,-1+b,2,1,C.white);return;}
+  const tw0=C.build==='bulk'?4:3;
+  P(6,0+b,tw0,5,C.top);P(6,0+b,1,5,C.tp2);if(C.pat==='stripe')P(6,2+b,tw0,1,C.patC);if(C.crop)P(6,4+b,tw0,1,C.skin);
+  P(9,1+b,3,2,C.slv==='long'?C.top:C.skin);if(C.slv==='short')P(9,1+b,1,2,C.top);
+  const H=C.hair;
+  if(C.hs==='afro')P(4,-4+b,5,6,H);
+  if(C.hs==='long'||C.hs==='braids')P(5,-3+b,2,C.hs==='braids'?7:5,H);
+  if(C.hs==='curly')P(5,-4+b,4,4,H);
+  P(7,-3+b,3,3,C.skin);P(9,-2+b,1,1,'#2a1a1a');
+  if(C.hs==='bald')P(6,-2+b,1,2,C.skin);
+  else if(C.hs!=='afro'&&C.hs!=='curly'){P(6,-2+b,1,2,H);if(C.hs!=='short')P(6,-3+b,4,1,H);}
+  if(C.hs==='curly'||C.hs==='afro')P(6,-4+b,4,1,H);
+  if(C.hs==='tail'||C.hs==='pony')P(5,-2+b,1,1,H);
+  if(C.beard==='full')P(7,-1+b,3,1,C.bc);if(C.stache)P(9,-1+b,1,1,C.stache);if(C.glass)P(9,-2+b,1,1,C.gfr);
+  if(C.hat==='beanie'){P(7,-4+b,3,1,'#8a8f98');P(6,-3+b,4,1,'#b1b5bd');P(8,-5+b,1,1,'#cfd2d8');}
+  if(C.hat==='bucket'){P(7,-4+b,3,1,C.hatC);P(5,-3+b,6,1,C.hatC2);}
+  if(C.hat==='cap'){P(6,-4+b,4,1,C.hatC);P(10,-3+b,1,1,C.hatC2);}
+  if(C.hat==='ears'){P(6,-4+b,1,1,'#1a1418');P(9,-4+b,1,1,'#1a1418');}
+},OL);}
+
+// Front-view bust for the dialog box and the rider select cards (42x42).
+function drawPortrait(c,C){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;
+  const P=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x+1,y+1,w,h);};
+  if(C.cat){const F=C.fur,F2=C.fur2,Wt=C.white;
+    P(6,32,28,8,F);P(6,32,6,8,F2);P(15,33,10,7,Wt);
+    for(const s of[-1,1]){for(let i=0;i<9;i++){const w=Math.max(1,9-i);P(20+s*10-(s>0?w:0)+(s<0?0:0),13-i,w,1,F);}P(20+s*10-(s>0?4:0),10,4,2,'#e89a8a');}
+    circ(P,20,22,12,(x,y)=>y>3&&Math.abs(x)<6?Wt:(y<-6&&(x+20)%4<2)?F2:(Math.abs(x)>9&&(y+20)%4<2)?F2:F);
+    P(13,19,4,3,'#6aa03a');P(23,19,4,3,'#6aa03a');P(14,19,2,3,'#1a1a14');P(24,19,2,3,'#1a1a14');P(14,19,1,1,'#fff');P(24,19,1,1,'#fff');
+    P(19,25,3,2,'#e87a8a');P(20,27,1,2,'#8a5a4a');P(18,29,2,1,'#8a5a4a');P(21,29,2,1,'#8a5a4a');
+    P(4,26,9,1,'#fff6ea');P(5,29,8,1,'#fff6ea');P(28,26,9,1,'#fff6ea');P(28,29,8,1,'#fff6ea');
+    outline(c,OL);return;}
+  const H=C.hair,H2=C.hr2,S=C.skin,S2=C.sk2,bald=C.hs==='bald';
+  // hair behind
+  switch(C.hs){
+    case 'tail':P(9,12,22,24,H);P(8,20,3,18,H);P(29,20,3,18,H2);break;
+    case 'pony':P(10,12,20,14,H);P(30,14,3,12,H2);break;
+    case 'long':{const e=C.len>6?40:33;P(9,12,22,e-12,H);P(7,18,4,e-18,H);P(29,18,4,e-18,H2);break;}
+    case 'bob':P(9,11,22,18,H);P(8,14,4,15,H);P(28,14,4,15,H2);break;
+    case 'curly':circ(P,20,17,13,(x,y)=>((x*5+y*3+99)%6)<1?H2:H);P(8,22,5,8,H);P(27,22,5,8,H);break;
+    case 'afro':circ(P,20,15,19,(x,y)=>((x*7+y*5+400)%9)<2?H2:H);break;
+    case 'braids':P(11,11,18,6,H);for(let k=0;k<7;k++)for(let y=14;y<41;y++){P(5+k,y,1,1,(y+k)%2?H:H2);P(29+k,y,1,1,(y+k)%2?H2:H);}break;
+    case 'short':P(10,14,20,10,H);break;
+  }
+  // clothes
+  P(4,32,32,8,C.top);P(4,32,6,8,C.tp2);P(30,32,6,8,C.tp3);
+  if(C.pat==='stripe')for(let y=33;y<40;y+=2)P(4,y,32,1,y%6===1?C.patC2:C.patC);
+  if(C.pat==='floral')for(let i=0;i<18;i++)P(5+((i*11)%30),33+((i*5)%7),1,1,i%3?C.patC:C.patC2);
+  if(C.pat==='plaid'){for(let x=6;x<36;x+=5)P(x,32,1,8,C.tp2);P(4,34,32,1,C.tp3);P(4,38,32,1,C.tp3);}
+  if(C.pat==='lace')for(let y=32;y<40;y++)for(let x=4+(y%2);x<36;x+=3)P(x,y,1,1,C.tp3);
+  if(C.pat==='open'){P(13,32,14,8,C.patC);if(C.patC2)for(let i=0;i<8;i++)P(14+((i*5)%12),33+((i*3)%7),1,1,C.patC2);P(12,32,1,8,C.tp2);P(27,32,1,8,C.tp2);}
+  if(C.pat==='mickey'){const k='#1a1418';circ(P,20,36,2,()=>k);circ(P,17,33,1,()=>k);circ(P,23,33,1,()=>k);}
+  if(C.pat==='polo'){P(14,30,5,3,C.tp3);P(21,30,5,3,C.tp3);P(19,32,2,4,C.tp2);P(19,33,1,1,'#fff');}
+  if(C.slv==='tank'){P(4,32,9,8,S);P(27,32,9,8,S);P(4,32,3,8,S2);P(12,30,3,3,C.top);P(25,30,3,3,C.top);if(C.build==='bulk'){P(5,34,6,1,S2);P(29,34,6,1,S2);}}
+  if(C.jacket){P(13,30,14,4,'#d9a31f');P(19,32,2,8,'#8a8f98');P(4,37,32,1,'#dfe6ea');}
+  // neck
+  P(16,26,8,5,C.neck);if(!C.jacket&&C.pat!=='polo'&&C.pat!=='open')P(15,31,10,1,C.neck);
+  // head
+  if(bald||C.hs==='buzz')circ(P,20,18,9,(x,y)=>x>6?S2:S);
+  if(['bald','buzz','short','pony'].includes(C.hs)){P(10,19,2,4,S2);P(28,19,2,4,S2);}
+  circ(P,20,20,8,(x,y)=>x>5?S2:S);
+  if(bald){P(15,11,4,1,mix(S,'#ffffff',.4));P(14,12,2,1,mix(S,'#ffffff',.25));}
+  // eyes, brows, cheeks, nose, mouth
   P(15,19,2,2,'#2a1a1a');P(23,19,2,2,'#2a1a1a');P(15,19,1,1,'#fff');P(23,19,1,1,'#fff');
-  P(14,17,3,1,'#4a2c1f');P(22,17,3,1,'#4a2c1f');
-  P(13,22,2,1,'#ec8f7f');P(25,22,2,1,'#ec8f7f');P(19,22,2,1,'#c4865f');P(17,25,6,1,'#b0544a');P(18,26,4,1,'#d77a6a');
-  // beanie
-  for(let y=2;y<=14;y++){const w=y<5?6+(y-2)*3:12;P(20-w,y,w*2,1,'#8a8f98');}
-  P(8,5,3,9,'#6b7079');P(27,4,3,6,'#a9aeb6');
-  for(let x=9;x<31;x++)P(x,12,1,3,x%2?'#b1b5bd':'#9a9fa7');
-  for(let i=0;i<14;i++)P(11+((i*7)%18),3+((i*5)%8),1,1,'#7a7f88');
-  circ(P,20,1,3,(x,y)=>y<0&&x<1?'#e4e6ea':'#c6c9cf');
+  P(14,17,3,1,C.brow);P(22,17,3,1,C.brow);
+  if(!C.beard){P(13,22,2,1,C.blush);P(25,22,2,1,C.blush);}
+  P(19,22,2,1,S2);P(17,25,6,1,C.lip);P(18,26,4,1,C.lip2);
+  // facial hair
+  if(C.beard==='full'){circ(P,20,21,9,(x,y)=>(y>1&&(y>3||Math.abs(x)>5))||Math.abs(x)>7&&y>-2?(((x+y+30)%4)?C.bc:mix(C.bc,'#ffffff',.2)):null);P(15,23,10,2,C.bc);P(17,25,6,1,'#6a3a30');P(18,26,4,1,C.lip2);}
+  if(C.beard==='stub')for(let y=21;y<31;y++)for(let x=11;x<30;x++){const dx=x-20,dy=y-20;if(dx*dx+dy*dy<=72&&(y>23||Math.abs(dx)>6)&&((x*7+y*3)%3===0)&&!(y>=25&&y<=26&&x>=17&&x<=22))P(x,y,1,1,C.bc);}
+  if(C.beard==='chin'){P(18,27,4,2,C.bc);P(19,29,2,1,C.bc);}
+  if(C.stache){P(14,23,12,2,C.stache);P(13,24,2,3,C.stache);P(25,24,2,3,C.stache);P(16,22,8,1,C.stache);}
+  // glasses
+  if(C.glass){g.globalAlpha=C.lensA;P(14,19,4,3,C.glass);P(22,19,4,3,C.glass);g.globalAlpha=1;const k=C.gfr;
+    for(const x of[13,21]){P(x,18,6,1,k);P(x,22,6,1,k);P(x,18,1,5,k);P(x+5,18,1,5,k);}P(19,19,2,1,k);P(10,19,3,1,k);P(27,19,3,1,k);}
+  // hair in front
+  if(!C.hat||C.hat==='ears'||C.hat==='cap'){
+    switch(C.hs){
+      case 'tail':case 'pony':case 'long':case 'bob':circ(P,20,18,9,(x,y)=>y<-4||(y<-1&&Math.abs(x)>5)||(y<3&&Math.abs(x)>7)?(x>4?H2:H):null);if(C.hs==='bob')P(12,13,9,2,H);break;
+      case 'curly':circ(P,20,16,10,(x,y)=>y<-2||(Math.abs(x)>7&&y<6)?(((x*5+y*3+99)%6)<1?H2:H):null);P(15,12,2,2,H);P(22,13,2,2,H);P(19,11,2,3,H2);break;
+      case 'afro':circ(P,20,15,10,(x,y)=>y<-2||(Math.abs(x)>7&&y<4)?H:null);break;
+      case 'braids':circ(P,20,18,9,(x,y)=>y<-4||(y<0&&Math.abs(x)>6)?((x+y+40)%2?H:H2):null);P(20,9,1,4,H2);break;
+      case 'buzz':circ(P,20,18,9,(x,y)=>y<-5||(y<-2&&Math.abs(x)>6)?H:null);break;
+    }}
+  if(C.hs==='short'){P(9,16,4,6,H);P(27,16,4,6,H);P(10,21,2,3,H2);P(28,21,2,3,H2);}
+  // headwear
+  if(C.hat==='beanie'){
+    for(let y=2;y<=14;y++){const w=y<5?6+(y-2)*3:12;P(20-w,y,w*2,1,'#8a8f98');}
+    P(8,5,3,9,'#6b7079');P(27,4,3,6,'#a9aeb6');
+    for(let x=9;x<31;x++)P(x,12,1,3,x%2?'#b1b5bd':'#9a9fa7');
+    for(let i=0;i<14;i++)P(11+((i*7)%18),3+((i*5)%8),1,1,'#7a7f88');
+    circ(P,20,1,3,(x,y)=>y<0&&x<1?'#e4e6ea':'#c6c9cf');}
+  if(C.hat==='bucket'){P(10,3,20,9,C.hatC);P(12,2,16,1,C.hatC);P(12,4,6,2,mix(C.hatC,'#ffffff',.2));P(10,9,20,2,C.hatC2);P(5,11,30,3,C.hatC2);P(6,11,28,1,mix(C.hatC2,'#ffffff',.2));}
+  if(C.hat==='cap'){circ(P,20,12,10,(x,y)=>y<0?(x<-3?mix(C.hatC,'#ffffff',.2):C.hatC):null);P(10,11,20,2,C.hatC2);P(12,13,16,1,C.hatC2);P(18,5,4,2,'#f4f0e4');}
+  if(C.hat==='ears'){const k='#1a1418';P(10,10,20,2,k);circ(P,9,6,5,()=>k);circ(P,31,6,5,()=>k);P(16,6,8,4,'#d72b2b');P(19,7,2,2,'#a81e1e');P(17,7,1,1,'#fff');P(22,8,1,1,'#fff');}
   outline(c,OL);
 }
+
+let CUR=null,RIDER=null,MINI=null;const CSPR={};
+function setChar(C){CUR=C;const s=CSPR[C.id]||(CSPR[C.id]={r:[0,1,2,3].map(f=>riderFrame(f,C)),m:[0,1].map(f=>miniFrame(f,C))});RIDER=s.r;MINI=s.m;
+  drawPortrait($('portrait'),C);const N=C.nick.toUpperCase();$('who').textContent=N;$('ppTitle').textContent='PASAPORTE DE '+N;
+  $('endTxt').textContent='Every department. Every pothole. Every tinto. '+C.nick+(C.veh==='bike'?' and a trusty black bicycle':' and Kali')+' rode the whole of Colombia.';}
 
 /* ---------- props ---------- */
 const PROP={};
@@ -1106,7 +1325,7 @@ function updateFerry(dt){FERRY.t+=dt/4;if(FERRY.t>=1){M.x=FERRY.b.x+(FERRY.dir>0
    ================================================================ */
 let state='title',TR=null,DLG=null;
 function setState(s){state=s;
-  $('title').hidden=s!=='title';const onMap=['map','dialog','passport','ferry'].includes(s);$('hud').hidden=!onMap;$('help').hidden=s!=='map';
+  $('title').hidden=s!=='title';$('select').hidden=s!=='select';const onMap=['map','dialog','passport','ferry'].includes(s);$('hud').hidden=!onMap;$('help').hidden=s!=='map';
   $('prompt').hidden=s!=='map'||!M.near;$('dialog').hidden=s!=='dialog';$('postcard').hidden=s!=='postcard';$('passport').hidden=s!=='passport';$('fail').hidden=s!=='fail';$('ending').hidden=s!=='ending';
   if(s!=='map')$('banner').hidden=true;
   if(onMap){updateHud();updatePrompt();updateWhere();}}
@@ -1137,9 +1356,30 @@ function arrive(){const r=R,d=r.d;if(r.quota&&r.items<r.quota){failRide('NOT ENO
   setState('postcard');}
 function leaveRide(){transition(()=>{R=null;setState('map');if(SAVE.v.length>=32&&!SAVE.end){SAVE.end=true;save();startRide(DEPTS.find(d=>d.id==='meta'),true);setState('ending');}},RX+20,GY-14);}
 
-const INTRO=['¡Hola! I\'m Ginna, from Broken Boots Travel.','This is Kali, my black AKT scooter. Together we\'re on a mission: explore all 32 departments of Colombia.','Ride the map with the ARROW keys or WASD. Pull up to a flag and press ENTER to explore that department.','On the road, SPACE jumps and ← → set the pace. Dodge the huecos, grab souvenirs and look after my boots.','Every department has its own challenge, and the roads get tougher with every stamp.','From Cartagena, press F to catch the ferry to San Andrés. P opens my passport. ¡Vamos!'];
+const INTRO_GINNA=['¡Hola! I\'m Ginna, from Broken Boots Travel.','This is Kali, my black AKT scooter. Together we\'re on a mission: explore all 32 departments of Colombia.','Ride the map with the ARROW keys or WASD. Pull up to a flag and press ENTER to explore that department.','On the road, SPACE jumps and ← → set the pace. Dodge the huecos, grab souvenirs and look after my boots.','Every department has its own challenge, and the roads get tougher with every stamp.','From Cartagena, press F to catch the ferry to San Andrés. P opens my passport. ¡Vamos!'];
+function introLines(C){if(C.id==='ginna')return INTRO_GINNA;const r=INTRO_GINNA.slice(2);
+  const hi=C.cat?'¡Miau! I\'m Guss. Ginna from Broken Boots Travel left the keys out, so…':'¡Hola! I\'m '+C.nick+', riding the Broken Boots route of Ginna from Broken Boots Travel.';
+  const veh=C.veh==='bike'?'This is my black bicycle. No motor, just legs. The mission: explore all 32 departments of Colombia.':'This is Kali, a black AKT scooter. Together we\'re on a mission: explore all 32 departments of Colombia.';
+  return[hi,veh,...r];}
 
-function start(){portrait();buildMap();initMap();startRide(DEPTS.find(d=>d.id==='meta'),true);
+/* rider select */
+let SEL=null;
+function buildSelect(){const box=$('chars');box.innerHTML='';CHARS.forEach((C,i)=>{const d=document.createElement('div');d.className='ch';const c=document.createElement('canvas');c.width=c.height=42;drawPortrait(c,C);
+  const n=document.createElement('span');n.textContent=C.short;d.append(c,n);d.addEventListener('click',()=>{if(state!=='select'||TR||!SEL)return;if(SEL.i===i)confirmSel();else{SEL.i=i;SFX.blip();renderSel();}});box.appendChild(d);});}
+function openSelect(fromMap){SEL={i:Math.max(0,CHARS.indexOf(CUR)),fromMap,orig:CUR};renderSel();setState('select');}
+function renderSel(){const C=CHARS[SEL.i];document.querySelectorAll('#chars .ch').forEach((el,i)=>el.classList.toggle('on',i===SEL.i));
+  $('selName').textContent=C.name.toUpperCase()+(C.veh==='bike'?' · BICYCLE':' · MOTO');setChar(C);}
+function updateSelect(){const n=CHARS.length,cols=9;let i=SEL.i;
+  if(JP.left)i=(i+n-1)%n;if(JP.right)i=(i+1)%n;if(JP.up&&i>=cols)i-=cols;if(JP.down)i=Math.min(n-1,i+cols);
+  if(i!==SEL.i){SEL.i=i;SFX.blip();renderSel();}
+  if(okP())confirmSel();
+  else if(JP.back){setChar(SEL.orig);const fm=SEL.fromMap;SEL=null;if(fm)transition(()=>{R=null;setState('map');});else setState('title');}}
+function confirmSel(){const C=CHARS[SEL.i],fm=SEL.fromMap;SEL=null;SAVE.c=C.id;save();SFX.coin();
+  if(fm)transition(()=>{R=null;setState('map');});
+  else if(!SAVE.intro){camFollow(M.x,M.y);transition(()=>{say(introLines(C),()=>{SAVE.intro=true;save();setState('map');});});}
+  else transition(()=>setState('map'));}
+
+function start(){setChar(charById(SAVE.c));buildSelect();buildMap();initMap();startRide(DEPTS.find(d=>d.id==='meta'),true);
   if(SAVE.v.length)$('startTxt').textContent='PRESS ENTER · '+SAVE.v.length+'/32 STAMPED';setState('title');requestAnimationFrame(loop);}
 
 let last=performance.now(),T=0;
@@ -1148,8 +1388,9 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
   if(TR){TR.t+=dt/.9;if(TR.t>=.5&&!TR.done){TR.done=true;TR.mid();TR.cx=W/2;TR.cy=H/2;if(state==='ride'||state==='map'){}}if(TR.t>=1)TR=null;}
   else{
     switch(state){
-      case 'title':updateRide(dt);if(okP()){if(!SAVE.intro){camFollow(M.x,M.y);transition(()=>{say(INTRO,()=>{SAVE.intro=true;save();setState('map');});});}else transition(()=>setState('map'));}break;
-      case 'map':updateMap(dt);break;
+      case 'title':updateRide(dt);if(okP())openSelect(false);break;
+      case 'select':updateRide(dt);updateSelect();break;
+      case 'map':if(JP.char){transition(()=>{startRide(DEPTS.find(d=>d.id==='meta'),true);openSelect(true);});break;}updateMap(dt);break;
       case 'dialog':updateDialog(dt);break;
       case 'passport':if(JP.pass||JP.back||JP.ok)setState('map');break;
       case 'ferry':updateFerry(dt);break;
@@ -1159,7 +1400,7 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
       case 'ending':updateRide(dt);if(okP()){transition(()=>{R=null;setState('map');});}break;
     }}
   // draw
-  if(state==='title'||state==='ride'||state==='postcard'||state==='fail'||state==='ending'){if(R)drawRideScene();}
+  if(state==='title'||state==='select'||state==='ride'||state==='postcard'||state==='fail'||state==='ending'){if(R)drawRideScene();}
   else if(state==='ferry'){const p=ferryPt(FERRY.a,FERRY.b,FERRY.t);camFollow(p[0],p[1]);drawMap(T,true,[p[0],p[1],(FERRY.b.x>FERRY.a.x)?1:-1]);}
   else{camFollow(M.x,M.y);drawMap(T,false);}
   if(TR){const k=TR.t<.5?1-TR.t/.5:(TR.t-.5)/.5;const rr=Math.max(0,k*300);ctx.fillStyle='#0b0816';ctx.beginPath();ctx.rect(0,0,W,H);ctx.arc(TR.cx,TR.cy,rr,0,Math.PI*2);ctx.fill('evenodd');}
