@@ -1356,10 +1356,10 @@ function arrive(){const r=R,d=r.d;if(r.quota&&r.items<r.quota){failRide('NOT ENO
   setState('postcard');}
 function leaveRide(){transition(()=>{R=null;setState('map');if(SAVE.v.length>=32&&!SAVE.end){SAVE.end=true;save();startRide(DEPTS.find(d=>d.id==='meta'),true);setState('ending');}},RX+20,GY-14);}
 
-const INTRO_GINNA=['¡Hola! I\'m Ginna, from Broken Boots Travel.','This is Kali, my black AKT scooter. Together we\'re on a mission: explore all 32 departments of Colombia.','Ride the map with the ARROW keys or WASD. Pull up to a flag and press ENTER to explore that department.','On the road, SPACE jumps and ← → set the pace. Dodge the huecos, grab souvenirs and look after my boots.','Every department has its own challenge, and the roads get tougher with every stamp.','From Cartagena, press F to catch the ferry to San Andrés. P opens my passport. ¡Vamos!'];
+const INTRO_GINNA=['¡Hola! I\'m Ginna, from Broken Boots Travel.','This is Kali, my black scooter. Together we\'re on a mission: explore all 32 departments of Colombia.','Ride the map with the ARROW keys or WASD. Pull up to a flag and press ENTER to explore that department.','On the road, SPACE jumps and ← → set the pace. Dodge the huecos, grab souvenirs and look after my boots.','Every department has its own challenge, and the roads get tougher with every stamp.','From Cartagena, press F to catch the ferry to San Andrés. P opens my passport. ¡Vamos!'];
 function introLines(C){if(C.id==='ginna')return INTRO_GINNA;const r=INTRO_GINNA.slice(2);
   const hi=C.cat?'¡Miau! I\'m Guss. Ginna from Broken Boots Travel left the keys out, so…':'¡Hola! I\'m '+C.nick+', riding the Broken Boots route of Ginna from Broken Boots Travel.';
-  const veh=C.veh==='bike'?'This is my black bicycle. No motor, just legs. The mission: explore all 32 departments of Colombia.':'This is Kali, a black AKT scooter. Together we\'re on a mission: explore all 32 departments of Colombia.';
+  const veh=C.veh==='bike'?'This is my black bicycle. No motor, just legs. Together we\'re on a mission: explore all 32 departments of Colombia.':'This is Kali, Ginna\'s little motico. Together we\'re on a mission: explore all 32 departments of Colombia.';
   return[hi,veh,...r];}
 
 /* rider select */
