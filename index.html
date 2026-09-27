@@ -494,15 +494,16 @@ function riderFrame(f,C){
   }
   const fl=f%2;
   if(C.cat){
-    // Guss: an orange tabby sitting upright on the seat, paws on the grips
+    // Guss: an orange tabby sitting cat-style on the seat, haunches down, front legs straight, tail curled round his paws
     const F=C.fur,F2=C.fur2,F3=C.fur3,Wt=C.white;
-    [[10,12],[9,11],[8,10],[7,9],[7,8],[8,7-fl]].forEach(([x,y],i)=>P(x,y+b,2,1,i%2?F2:F));
-    circ(P,13,8+b,4,(x,y)=>x>1&&y>-2?F3:((y+8)%3===0&&x<1)?F2:F);
-    P(16,10+b,2,10-b,F);P(16,10+b,1,10-b,F2);P(16,19,3,2,Wt);
-    P(15,4+b,3,2,F);P(17,5+b,3,2,F);P(19,6,3,2,F);P(22,6,2,2,Wt);
-    circ(P,17,0+b,3,(x,y)=>y>0&&x>0?Wt:(y<-1&&(x+9)%2===0)?F2:F);
-    P(14,-5+b,2,2,F);P(14,-6+b,1,1,F);P(18,-5+b,2,2,F);P(19,-6+b,1,1,F);P(15,-4+b,1,1,'#e89a8a');P(18,-4+b,1,1,'#e89a8a');
-    P(18,-1+b,1,1,'#3a7a2a');P(20,0+b,1,1,'#e87a8a');P(21,1+b,2,1,'#fff6ea');
+    circ(P,9,9+b,3,(x,y)=>x>1&&y>0?F3:((x+y+20)%3===0)?F2:F);
+    P(10,4+b,5,7,F);P(11,4+b,1,6,F2);P(13,5+b,1,5,F2);P(14,5+b,1,6,Wt);
+    P(13,9+b,2,4-b,F2);P(15,9+b,2,4-b,F);P(13,12,2,1,F3);P(15,12,3,1,Wt);
+    for(let x=6;x<13;x++)P(x,12,1,1,(x>>1)%2?F2:F);P(12,11-fl,1,1,F2);
+    circ(P,16,1+b,3,(x,y)=>y>0&&x>0?Wt:(y<-1&&(x+9)%2===0)?F2:F);
+    P(13,-3+b,2,2,F);P(13,-4+b,1,1,F);P(17,-3+b,2,2,F);P(18,-4+b,1,1,F);P(14,-2+b,1,1,'#e89a8a');P(17,-2+b,1,1,'#e89a8a');
+    P(17,0+b,1,1,'#3a7a2a');P(19,1+b,1,1,'#e87a8a');P(20,2+b,2,1,'#fff6ea');
+    P(13,4+b,4,1,'#2b62b8');P(15,5+b,1,1,'#f5c02e');
   }else if(C.dog){
     // Chorizo: a red dachshund stretched along the seat, front paws on the grips, ears flapping
     const F=C.fur,F2=C.fur2,F3=C.fur3;
@@ -597,7 +598,8 @@ function miniFrame(f,C){return spr(20,18,(P0)=>{const P=(x,y,w,h,c)=>P0(x,y+3,w,
     P(3,6,6,1,'#2a2530');P(9,10,5,1,'#18171d');P(13,3,2,8,'#18171d');P(14,3,1,2,'#4f4e5c');P(12,2,4,1,'#18171d');P(16,2,1,1,'#fff3b0');
     if(!C.pet){P(10,8,3,2,C.shoe);P(6,5+b,5,2,C.bot);if(C.shorts)P(9,5+b,2,2,C.skin);}
   }
-  if(C.cat){P(4,3+b,2,1,C.fur2);P(3,2+b,1,1,C.fur);P(6,1+b,4,5,C.fur);P(8,2+b,2,4,C.fur3);P(9,1+b,3,2,C.fur);
+  if(C.cat){P(2,5,2,1,C.fur2);P(1,4+b,1,1,C.fur2);P(1,3-b,1,1,C.fur);P(3,3+b,4,3,C.fur);P(4,3+b,2,1,C.fur2);
+    P(7,1+b,2,5,C.fur);P(8,2+b,1,3,C.white);P(7,1+b,2,1,'#2b62b8');
     P(7,-3+b,4,3,C.fur);P(7,-4+b,1,1,C.fur);P(10,-4+b,1,1,C.fur);P(10,-2+b,1,1,'#3a7a2a');P(9,-1+b,2,1,C.white);return;}
   if(C.dog){P(2,2-b,1,1,C.fur2);P(3,3+b,8,3,C.fur);P(4,3+b,6,1,C.fur2);P(4,6,1,1,C.fur2);P(8,6,1,1,C.fur2);
     P(8,0+b,2,3,C.fur);P(8,-2+b,3,3,C.fur);P(11,-1+b,2,2,C.fur);P(13,-1+b,1,1,'#1a1418');P(10,-2+b,1,1,'#2a1a1a');P(7,-1+b,1,3,C.fur2);P(8,1+b,2,1,C.collar);return;}
