@@ -33,7 +33,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   1. `RAW`/`DEPTS`: facts, capital, pin/seed coords, `biome`, and optional `lm` (landmark), `fx`, `time`, `houses`, `noSea`, `farSnow`.
   2. `BIOMES[biome]`: sky, far/mid layer specs, ground colors, road type, default props, obstacles, item.
   3. `SCENE[id]`: per-department prop list and far/mid spec overrides (paddies, flood, patch, river…), merged over the biome.
-  4. `TW[id]`: the department's challenge (`k` is one of boat, gaps, movers, dark, zones, bumps, surf, rocks, wind, mirage, fog, foam, vents, arches, timer, quota, plus params). `MOVER` holds moving-hazard stats, and `OBS` holds obstacle hitboxes (`h`, `w`, optional `fx`).
+  4. `DX[id]` (between the `/* DX-BEGIN */` … `/* DX-END */` markers, one `DX.<id>={...}` block per department): the department's own art, overriding the layers above.
+     - `lm()` is the end-of-ride landmark (used instead of `d.lm`); `lmFx(g,x,y,t,r)` animates it.
+     - `back()` is a distant set piece drawn between the far and mid layers (`backY`, `backGap`, `backPar`).
+     - `props` holds new roadside sprites (keys prefixed `<id>_`, looked up by `prop()` via `DXP`), and `scene` is the roadside pool.
+     - `far`/`mid` are merged into the layer specs, and `time` optionally overrides the time of day.
+     - Blocks must stay self-contained, with no top-level declarations, because they share the IIFE scope.
+  5. `TW[id]`: the department's challenge (`k` is one of boat, gaps, movers, dark, zones, bumps, surf, rocks, wind, mirage, fog, foam, vents, arches, timer, quota, plus params). `MOVER` holds moving-hazard stats, and `OBS` holds obstacle hitboxes (`h`, `w`, optional `fx`).
 - **Ride lifecycle:**
   - `startRide(d, demo)` builds `R`. Difficulty `k = lvl/31` comes from stamps already collected and scales length (2200→3800), base speed, spacing and challenge intensity.
   - `genCourse(R)` lays out obstacles, items, gaps, zones, surfaces, fog, arches and vents from a seeded `rng` (so each department's layout is deterministic). Landslides, wind and foam use `Math.random` at runtime.
