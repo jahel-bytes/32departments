@@ -128,12 +128,45 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
 .hint{font-family:'Press Start 2P',monospace;font-size:calc(5*var(--u));color:var(--ink-dim);margin-top:calc(8*var(--u))}
 
 /* touch */
-#touch{position:fixed;inset:auto 0 0 0;display:flex;justify-content:space-between;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));pointer-events:none;z-index:5}
-#touch .pad{display:grid;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(3,46px);gap:2px}
-#touch button{pointer-events:auto;width:46px;height:46px;border:2px solid #06040d;background:rgba(27,20,48,.75);color:var(--ink);font:14px 'Press Start 2P',monospace;touch-action:none;-webkit-user-select:none;user-select:none}
-#touch .ab{display:flex;gap:10px;align-items:flex-end}
-#touch .ab button{width:62px;height:62px;border-radius:50%;background:rgba(245,192,46,.85);color:#2a1a08}
-#touch .ab button.sm{width:46px;height:46px;background:rgba(27,20,48,.75);color:var(--ink);font-size:9px}
+#touch{--b:clamp(40px,11vmin,56px);--a:calc(var(--b)*1.3);--edge:#06040d;position:fixed;inset:auto 0 0 0;display:flex;justify-content:space-between;align-items:flex-end;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));pointer-events:none;z-index:5;font-family:'Press Start 2P',monospace;-webkit-tap-highlight-color:transparent}
+#touch button{pointer-events:auto;touch-action:none;-webkit-user-select:none;user-select:none;border:0;margin:0;padding:0;font:inherit;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* d-pad: one cross-shaped slab, arms share a single outline */
+#touch .pad{display:grid;grid-template-columns:repeat(3,var(--b));grid-template-rows:repeat(3,var(--b));pointer-events:auto;touch-action:none;filter:drop-shadow(0 4px 0 var(--edge))}
+#touch .pad button{position:relative;background:linear-gradient(#3b2e6b,#261c48);border:3px solid var(--edge);box-shadow:inset 0 3px 0 rgba(255,255,255,.14)}
+#touch .pad [data-k=up]{grid-area:1/2;border-bottom:0}
+#touch .pad [data-k=left]{grid-area:2/1;border-right:0}
+#touch .pad [data-k=right]{grid-area:2/3;border-left:0}
+#touch .pad [data-k=down]{grid-area:3/2;border-top:0;box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}
+#touch .pad .hub{grid-area:2/2;background:radial-gradient(circle,#1a1330 0 32%,transparent 34%),#261c48}
+#touch .pad button::before{content:'';position:absolute;left:50%;top:50%;width:calc(var(--b)*.36);height:calc(var(--b)*.3);transform:translate(-50%,-50%);background:var(--ink-dim);clip-path:polygon(50% 0,100% 100%,0 100%)}
+#touch .pad [data-k=down]::before{transform:translate(-50%,-50%) rotate(180deg)}
+#touch .pad [data-k=left]::before{transform:translate(-50%,-50%) rotate(-90deg)}
+#touch .pad [data-k=right]::before{transform:translate(-50%,-50%) rotate(90deg)}
+#touch .pad button.on{background:#1a1330;box-shadow:inset 0 3px 0 rgba(0,0,0,.35)}
+#touch .pad button.on::before{background:var(--jacket)}
+/* right cluster: menu pills over SNES-style A/B */
+#touch .ab{display:flex;flex-direction:column;align-items:flex-end;gap:calc(var(--b)*.4)}
+#touch .menu{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;max-width:calc(100vw - 3*var(--b) - 48px)}
+#touch .pill{display:none;height:26px;padding:0 9px;font-size:8px;background:rgba(27,20,48,.92);box-shadow:0 0 0 2px var(--edge),inset 0 0 0 2px var(--panel-edge),inset 0 -4px 0 #140e26,0 4px 0 2px var(--edge)}
+#touch .pill.on{transform:translateY(3px);box-shadow:0 0 0 2px var(--edge),inset 0 0 0 2px var(--panel-edge),0 1px 0 2px var(--edge)}
+#touch .pill[data-k=ferry]{color:#9fe0ff}
+#touch.mute .pill[data-k=music]{color:var(--ink-dim);text-decoration:line-through}
+#touch .face{display:flex;align-items:flex-start;gap:calc(var(--b)*.3);padding-bottom:24px}
+#touch .rb{position:relative;width:var(--a);height:var(--a);border-radius:50%;font-size:calc(var(--a)*.28);background:var(--jacket);color:#2a1a08;box-shadow:0 0 0 3px var(--edge),inset 0 -6px 0 var(--jacket-dk),inset 0 5px 0 rgba(255,255,255,.4),0 5px 0 3px var(--edge)}
+#touch .rb.b{width:calc(var(--a)*.8);height:calc(var(--a)*.8);margin-top:calc(var(--a)*.5);background:var(--flag-red);color:var(--ink);box-shadow:0 0 0 3px var(--edge),inset 0 -6px 0 #7e0a18,inset 0 5px 0 rgba(255,255,255,.3),0 5px 0 3px var(--edge)}
+#touch .rb.on{transform:translateY(4px);box-shadow:0 0 0 3px var(--edge),inset 0 5px 0 rgba(0,0,0,.25),0 1px 0 3px var(--edge)}
+#touch .rb::after{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:12px;font-size:7px;color:var(--ink);text-shadow:1px 1px 0 #000,-1px 1px 0 #000;white-space:nowrap;content:'OK'}
+#touch .rb.b::after{content:'BACK'}
+#touch[data-st=ride] .rb.a::after{content:'JUMP'}
+#touch[data-st=ride] .rb.b::after{content:'EXIT'}
+/* only show what the current screen uses */
+#touch:not([data-st=map]):not([data-st=select]):not([data-st=ride]) .pad,
+#touch:not([data-st=select]):not([data-st=passport]):not([data-st=ride]):not([data-st=postcard]):not([data-st=fail]) .rb.b,
+#touch[data-st=ferry] .ab{visibility:hidden}
+#touch .pill[data-k=music],#touch[data-st=map] .pill[data-k=char],#touch[data-st=map] .pill[data-k=pass],#touch[data-st=passport] .pill[data-k=pass],#touch[data-st=map][data-port] .pill[data-k=ferry]{display:block}
+@media (orientation:portrait){#touch{--b:clamp(46px,14vw,62px);padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}}
+@media (orientation:landscape){#touch{opacity:.9}}
+.touch #help{display:none}
 @media (prefers-reduced-motion:reduce){.blink,.pc-cta,#dialog .next{animation:none}}
 </style>
 
@@ -211,15 +244,15 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
 </div>
 <div id="touch" hidden>
   <div class="pad">
-    <span></span><button data-k="up">▲</button><span></span>
-    <button data-k="left">◀</button><span></span><button data-k="right">▶</button>
-    <span></span><button data-k="down">▼</button><span></span>
+    <button data-k="up" aria-label="Up"></button><button data-k="left" aria-label="Left"></button><span class="hub"></span><button data-k="right" aria-label="Right"></button><button data-k="down" aria-label="Down"></button>
   </div>
   <div class="ab">
-    <button class="sm" data-k="char">WHO</button>
-    <button class="sm" data-k="pass">PASS</button>
-    <button class="sm" data-k="ferry">FERRY</button>
-    <button data-k="ok">A</button>
+    <div class="menu">
+      <button class="pill" data-k="char">WHO</button><button class="pill" data-k="pass">PASS</button><button class="pill" data-k="ferry">FERRY</button><button class="pill" data-k="music">MUSIC</button>
+    </div>
+    <div class="face">
+      <button class="rb b" data-k="back">B</button><button class="rb a" data-k="ok">A</button>
+    </div>
   </div>
 </div>
 
@@ -352,10 +385,18 @@ const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Arrow
 addEventListener('keydown',e=>{const k=KEYMAP[e.code];if(!k)return;e.preventDefault();audioInit();if(!K[k])JP[k]=true;K[k]=true;});
 addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)K[k]=false;});
 addEventListener('blur',()=>{for(const k in K)K[k]=false;});
-addEventListener('touchstart',()=>{$('touch').hidden=false;},{once:true,passive:true});
-document.querySelectorAll('#touch button').forEach(b=>{const k=b.dataset.k;
-  b.addEventListener('pointerdown',e=>{e.preventDefault();audioInit();if(!K[k])JP[k]=true;K[k]=true;if(k==='ok')K.jump=true,JP.jump=true;});
-  const up=()=>{K[k]=false;if(k==='ok')K.jump=false;};b.addEventListener('pointerup',up);b.addEventListener('pointerleave',up);b.addEventListener('pointercancel',up);});
+addEventListener('touchstart',()=>{$('touch').hidden=false;document.documentElement.classList.add('touch');updatePrompt();},{once:true,passive:true});
+document.querySelectorAll('#touch .ab button').forEach(b=>{const k=b.dataset.k;
+  b.addEventListener('pointerdown',e=>{e.preventDefault();audioInit();b.classList.add('on');if(!K[k])JP[k]=true;K[k]=true;if(k==='ok')K.jump=true,JP.jump=true;});
+  const up=()=>{b.classList.remove('on');K[k]=false;if(k==='ok')K.jump=false;};b.addEventListener('pointerup',up);b.addEventListener('pointerleave',up);b.addEventListener('pointercancel',up);});
+// The d-pad reads the thumb's angle from its centre, so sliding between arms and diagonals work.
+{const pad=document.querySelector('#touch .pad'),DIRS=['up','down','left','right'];let pid=null;
+  const set=v=>DIRS.forEach(k=>{if(v[k]&&!K[k])JP[k]=true;K[k]=!!v[k];pad.querySelector('[data-k='+k+']').classList.toggle('on',!!v[k]);});
+  const aim=e=>{const r=pad.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;
+    if(Math.hypot(x,y)<r.width*.1)return set({});const a=Math.atan2(y,x),c=Math.cos(a),s=Math.sin(a);set({right:c>.38,left:c<-.38,down:s>.38,up:s<-.38});};
+  pad.addEventListener('pointerdown',e=>{e.preventDefault();audioInit();pid=e.pointerId;pad.setPointerCapture(pid);aim(e);});
+  pad.addEventListener('pointermove',e=>{if(e.pointerId===pid)aim(e);});
+  const end=e=>{if(e.pointerId===pid){pid=null;set({});}};pad.addEventListener('pointerup',end);pad.addEventListener('pointercancel',end);}
 cv.addEventListener('pointerdown',()=>{audioInit();JP.ok=true;});
 $('dialog').addEventListener('click',()=>{JP.ok=true;});
 $('postcard').addEventListener('click',e=>{if(e.target.tagName!=='A')JP.ok=true;});
@@ -5399,15 +5440,16 @@ function updateFerry(dt){FERRY.t+=dt/4;if(FERRY.t>=1){M.x=FERRY.b.x+(FERRY.dir>0
    UI / STATES
    ================================================================ */
 let state='title',TR=null,DLG=null;
-function setState(s){state=s;
+function setState(s){state=s;$('touch').dataset.st=s;
   $('title').hidden=s!=='title';$('select').hidden=s!=='select';const onMap=['map','dialog','passport','ferry'].includes(s);$('hud').hidden=!onMap;$('help').hidden=s!=='map';
   $('prompt').hidden=s!=='map'||!M.near;$('dialog').hidden=s!=='dialog';$('postcard').hidden=s!=='postcard';$('passport').hidden=s!=='passport';$('fail').hidden=s!=='fail';$('ending').hidden=s!=='ending';
   if(s!=='map')$('banner').hidden=true;
   if(onMap){updateHud();updatePrompt();updateWhere();}}
 function transition(mid,cx,cy){TR={t:0,mid,done:false,cx:cx??W/2,cy:cy??H/2};}
 function updateHud(){const n=SAVE.v.length;$('cnt').textContent=n;$('bar').style.width=(n/32*100)+'%';$('wear').textContent=n>=32?'Boot wear: 100% · broken!':'Boot wear: '+Math.round(n/32*100)+'%';}
-function updatePrompt(){const el=$('prompt');if(!M.near||state!=='map'){el.hidden=true;return;}const d=M.near.d;let h='<div><span class="key">ENTER</span>'+(visited(d.id)?'Ride '+d.name+' again':'Explore '+d.name)+'</div>';
-  if(d.id==='bolivar')h+='<div><span class="key">F</span>Take the ferry to San Andrés</div>';if(d.id==='sanandres')h+='<div><span class="key">F</span>Ferry back to Cartagena</div>';el.innerHTML=h;el.hidden=false;}
+function updatePrompt(){const el=$('prompt'),port=!!M.near&&(M.near.d.id==='bolivar'||M.near.d.id==='sanandres');$('touch').toggleAttribute('data-port',port);
+  if(!M.near||state!=='map'){el.hidden=true;return;}const d=M.near.d,tc=document.documentElement.classList.contains('touch');let h='<div><span class="key">'+(tc?'A':'ENTER')+'</span>'+(visited(d.id)?'Ride '+d.name+' again':'Explore '+d.name)+'</div>';
+  const fk='<span class="key">'+(tc?'FERRY':'F')+'</span>';if(d.id==='bolivar')h+='<div>'+fk+'Take the ferry to San Andrés</div>';if(d.id==='sanandres')h+='<div>'+fk+'Ferry back to Cartagena</div>';el.innerHTML=h;el.hidden=false;}
 function updateWhere(){const d=M.near?M.near.d:(M.region>=0?DEPTS[M.region]:null);const el=$('where');if(!d){el.hidden=true;return;}el.hidden=false;
   el.innerHTML='<div class="k">'+(M.near?'Capital · '+esc(d.cap):'Riding through')+'</div><div class="n">'+esc(d.name)+'</div><div class="t">'+esc(d.tag)+'</div>'+(TW[d.id]?'<div class="t" style="color:var(--jacket)">Challenge: '+esc(TW[d.id].name)+'</div>':'')+'<div class="k" style="margin-top:3px">'+BIOME_NAME[d.biome]+(visited(d.id)?' · <span class="ok">stamped ✓</span>':'')+'</div>';}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -5430,7 +5472,7 @@ function arrive(){const r=R,d=r.d;if(r.quota&&r.items<r.quota){failRide('NOT ENO
   setState('postcard');}
 function leaveRide(){transition(()=>{R=null;setState('map');if(SAVE.v.length>=32&&!SAVE.end){SAVE.end=true;save();startRide(DEPTS.find(d=>d.id==='meta'),true);setState('ending');}},RX+20,GY-14);}
 
-const INTRO_GINNA=['¡Hola! I\'m Ginna, from Broken Boots Travel.','This is Kali, my black scooter. Together we\'re on a mission: explore all 32 departments of Colombia.','Ride the map with the ARROW keys or WASD. Pull up to a flag and press ENTER to explore that department.','On the road, SPACE jumps and ← → set the pace. Dodge the huecos, grab souvenirs and look after my boots.','Every department has its own challenge, and the roads get tougher with every stamp.','From Cartagena, press F to catch the ferry to San Andrés. P opens my passport. ¡Vamos!'];
+const INTRO_GINNA=['Hi, I\'m Ginna, meawdy pawdy!','This is Kali, my black scooter. Together we\'re on a mission: explore all 32 departments of Colombia.','Ride the map with the ARROW keys or WASD. Pull up to a flag and press ENTER to explore that department.','On the road, SPACE jumps and ← → set the pace. Dodge the huecos, grab souvenirs and look after my boots.','Every department has its own challenge, and the roads get tougher with every stamp.','From Cartagena, press F to catch the ferry to San Andrés. P opens my passport. ¡Vamos!'];
 function introLines(C){if(C.id==='ginna')return INTRO_GINNA;const r=INTRO_GINNA.slice(2);
   const hi=C.cat?'¡Miau! I\'m Guss. Ginna from Broken Boots Travel left the keys out, so…':'¡Hola! I\'m '+C.nick+', riding the Broken Boots route of Ginna from Broken Boots Travel.';
   const veh=C.veh==='bike'?'This is my black bicycle. No motor, just legs. Together we\'re on a mission: explore all 32 departments of Colombia.':'This is Kali, Ginna\'s little motico. Together we\'re on a mission: explore all 32 departments of Colombia.';
@@ -5458,7 +5500,7 @@ function start(){setChar(charById(SAVE.c));buildSelect();buildMap();initMap();st
 
 let last=performance.now(),T=0;
 function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
-  if(JP.music&&AU.mg){AU.music=!AU.music;}
+  if(JP.music&&AU.mg){AU.music=!AU.music;$('touch').classList.toggle('mute',!AU.music);}
   if(TR){TR.t+=dt/.9;if(TR.t>=.5&&!TR.done){TR.done=true;TR.mid();TR.cx=W/2;TR.cy=H/2;if(state==='ride'||state==='map'){}}if(TR.t>=1)TR=null;}
   else{
     switch(state){
