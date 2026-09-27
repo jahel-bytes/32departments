@@ -418,7 +418,7 @@ const CHARS=[
  {id:'juli',name:'Juli',skin:'#e3aa88',sk2:'#c48a68',hair:'#6a4428',hs:'bald',glass:'#bcd4e0',gfr:'#d62828',lensA:.35,stache:'#6a4428',beard:'stub',bc:'#a8785c',top:'#3a3a48',tp2:'#e8e4dc',tp3:'#55556a',pat:'plaid',slv:'long',bot:'#2f3b5c',bt2:'#45538a',shoe:'#5a3a22'},
  {id:'claire',name:'Claire',skin:'#ebbd98',sk2:'#cf9d78',hair:'#6e4128',hr2:'#51301c',hs:'long',len:8,top:'#efe2dc',tp2:'#d8c6be',tp3:'#ffffff',pat:'floral',patC:'#d8486a',patC2:'#6a8a4a',slv:'tank',crop:1,bot:'#8fb3d6',bt2:'#b0cde8',shorts:1,shoe:'#ece8e0'},
  {id:'jp',name:'JP',skin:'#e6ad8c',sk2:'#c78d6c',hair:'#6e5a48',hs:'bald',beard:'full',bc:'#7e6c5c',top:'#f2f2f0',tp2:'#d4d4d2',tp3:'#ffffff',slv:'short',bot:'#2c2c34',bt2:'#44444e',shoe:'#3a3a40'},
- {id:'ross',name:'Ross',skin:'#ebb895',sk2:'#cc9874',hair:'#7a5438',hs:'bald',beard:'stub',bc:'#9a6e50',top:'#4d5864',tp2:'#3a434e',tp3:'#66727e',slv:'short',bot:'#2a2a30',bt2:'#3e3e46',shoe:'#1e1e22',veh:'bike'},
+ {id:'ross',name:'Ross',skin:'#ebb895',sk2:'#cc9874',hair:'#7a5438',hs:'bald',glass:'#d8e6ee',gfr:'#2a2420',lensA:.3,round:1,top:'#4d5864',tp2:'#3a434e',tp3:'#66727e',slv:'short',bot:'#2a2a30',bt2:'#3e3e46',shoe:'#1e1e22',veh:'bike'},
  {id:'kelly',name:'Kelly',skin:'#e9b793',sk2:'#cb976f',hair:'#3e2616',hr2:'#2a180c',hs:'pony',top:'#e595ac',tp2:'#c5738c',tp3:'#f5b8c8',slv:'tank',crop:1,build:'bulk',bot:'#232228',bt2:'#3a3942',shoe:'#ece8e0'},
  {id:'carmelo',name:'Carmelo',skin:'#5b3524',sk2:'#43251a',hair:'#e2d3a4',hr2:'#b49f6c',brow:'#2a1810',hs:'braids',top:'#1f1d24',tp2:'#131216',tp3:'#3a3742',pat:'lace',slv:'long',build:'slim',bot:'#2c2a34',bt2:'#44404e',shoe:'#ece8e0',lip:'#7a3a30',lip2:'#94504a',blush:'#6e3a2c'},
  {id:'xiomara',name:'Xiomara',skin:'#c3845c',sk2:'#a26744',hair:'#1b1515',hr2:'#342828',hs:'afro',top:'#e6c4c8',tp2:'#c7a0a6',tp3:'#f6e0e2',slv:'short',bot:'#2f3b5c',bt2:'#45538a',shoe:'#8a4a2a',lip:'#a04a3e',blush:'#b86a54'},
@@ -575,6 +575,7 @@ function riderHead(P,C,b,fl){const y=b,H=C.hair,H2=C.hr2,S=C.skin,S2=C.sk2;
   if(C.stache){P(16,0+y,4,1,C.stache);P(16,1+y,1,1,C.stache);P(19,1+y,1,1,C.stache);}
   // glasses
   if(C.gsemi){P(14,-2+y,3,1,C.gfr);P(16,-1+y,1,1,C.gfr);P(18,-1+y,1,1,C.gfr);}
+  else if(C.round){const k=C.gfr;P(17,-2+y,1,1,k);P(16,-1+y,1,1,k);P(18,-1+y,1,1,k);P(17,0+y,1,1,k);P(14,-1+y,2,1,k);P(17,-1+y,1,1,'#2a1a1a');}
   else if(C.glass){P(16,-1+y,3,1,C.glass);P(16,-2+y,3,1,C.gfr);P(14,-2+y,2,1,C.gfr);if(C.lensA<.5)P(17,-1+y,1,1,'#2a1a1a');}
   // headwear
   if(C.hat==='beanie'){
@@ -690,6 +691,8 @@ function drawPortrait(c,C){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.
   if(C.stache){P(14,23,12,2,C.stache);P(13,24,2,3,C.stache);P(25,24,2,3,C.stache);P(16,22,8,1,C.stache);}
   // glasses
   if(C.gsemi){const k=C.gfr;for(const x of[13,21]){P(x,18,6,1,k);P(x,19,1,2,k);P(x+5,19,1,2,k);P(x+1,21,1,1,k);P(x+4,21,1,1,k);P(x+2,22,2,1,k);}P(19,19,2,1,k);P(10,18,3,1,k);P(27,18,3,1,k);}
+  else if(C.round){g.globalAlpha=C.lensA;P(14,18,4,4,C.glass);P(22,18,4,4,C.glass);g.globalAlpha=1;const k=C.gfr;
+    for(const x of[13,21]){P(x+1,17,4,1,k);P(x+1,22,4,1,k);P(x,18,1,4,k);P(x+5,18,1,4,k);}P(19,19,2,1,k);P(10,19,3,1,k);P(27,19,3,1,k);}
   else if(C.glass){g.globalAlpha=C.lensA;P(14,19,4,3,C.glass);P(22,19,4,3,C.glass);g.globalAlpha=1;const k=C.gfr;
     for(const x of[13,21]){P(x,18,6,1,k);P(x,22,6,1,k);P(x,18,1,5,k);P(x+5,18,1,5,k);}P(19,19,2,1,k);P(10,19,3,1,k);P(27,19,3,1,k);}
   // hair in front
