@@ -610,9 +610,8 @@ function riderHead(P,C,b,fl){const y=b,H=C.hair,H2=C.hr2,S=C.skin,S2=C.sk2;
   if(C.beard==='full'){P(14,-1+y,1,3,C.bc);P(15,0+y,5,3,C.bc);P(16,3+y,3,1,C.bc);P(17,1+y,2,1,C.lip);}
   if(C.beard==='chin')P(17,2+y,2,1,C.bc);
   if(C.stache){P(16,0+y,4,1,C.stache);P(16,1+y,1,1,C.stache);P(19,1+y,1,1,C.stache);}
-  // glasses
-  if(C.gsemi){P(14,-2+y,3,1,C.gfr);P(16,-1+y,1,1,C.gfr);P(18,-1+y,1,1,C.gfr);}
-  else if(C.round){const k=C.gfr;P(17,-2+y,1,1,k);P(16,-1+y,1,1,k);P(18,-1+y,1,1,k);P(17,0+y,1,1,k);P(14,-1+y,2,1,k);P(17,-1+y,1,1,'#2a1a1a');}
+  // glasses (gsemi frames are portrait-only, not worn on the ride)
+  if(C.round){const k=C.gfr;P(17,-2+y,1,1,k);P(16,-1+y,1,1,k);P(18,-1+y,1,1,k);P(17,0+y,1,1,k);P(14,-1+y,2,1,k);P(17,-1+y,1,1,'#2a1a1a');}
   else if(C.glass){P(16,-1+y,3,1,C.glass);P(16,-2+y,3,1,C.gfr);P(14,-2+y,2,1,C.gfr);if(C.lensA<.5)P(17,-1+y,1,1,'#2a1a1a');}
   // headwear
   if(C.hat==='beanie'){
