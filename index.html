@@ -165,11 +165,41 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
 #touch:not([data-st=map]):not([data-st=select]):not([data-st=ride]) .pad,
 #touch:not([data-st=select]):not([data-st=passport]):not([data-st=ride]):not([data-st=postcard]):not([data-st=fail]) .rb.b,
 #touch[data-st=ferry] .ab{visibility:hidden}
-#touch .pill[data-k=music],#touch[data-st=map] .pill[data-k=char],#touch[data-st=map] .pill[data-k=pass],#touch[data-st=passport] .pill[data-k=pass],#touch[data-st=map][data-port] .pill[data-k=ferry]{display:block}
+#touch .pill[data-k=music],#touch[data-st=map] .pill[data-k=char],#touch[data-st=map] .pill[data-k=pass],#touch[data-st=passport] .pill[data-k=pass],#touch[data-st=map][data-port] .pill[data-k=ferry],#touch[data-st=map] .pill[data-k=art]{display:block}
 @media (orientation:portrait){#touch{--b:clamp(46px,14vw,62px);padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}}
 @media (orientation:landscape){#touch{opacity:.9}}
 .touch #help{display:none}
 @media (prefers-reduced-motion:reduce){.blink,.pc-cta,#dialog .next{animation:none}}
+/* ---------- art gallery: its own scrolling page over the game ---------- */
+.artlink{position:absolute;top:calc(8*var(--u));right:calc(8*var(--u));pointer-events:auto;cursor:pointer;font-family:'Press Start 2P',monospace;font-size:calc(5*var(--u));color:var(--ink);background:rgba(27,20,48,.85);border:0;padding:calc(3*var(--u)) calc(4*var(--u));box-shadow:0 0 0 var(--u) #06040d,inset 0 0 0 var(--u) var(--panel-edge)}
+.artlink:hover{color:var(--jacket)}
+#art{position:fixed;inset:0;z-index:10;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;background:var(--night);color:var(--ink);font-size:18px;line-height:1.15}
+#art header{position:sticky;top:0;z-index:1;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px 16px;background:rgba(13,10,26,.95);border-bottom:2px solid var(--panel-edge)}
+#art h1{margin:0;font-family:'Press Start 2P',monospace;font-size:14px;font-weight:normal;color:var(--jacket);text-shadow:2px 2px 0 #000}
+#artTabs{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 auto}
+#art button{font-family:'Press Start 2P',monospace;font-size:8px;line-height:1.3;color:var(--ink);background:var(--panel);border:0;padding:7px 9px;cursor:pointer;box-shadow:0 0 0 2px #06040d,inset 0 0 0 2px var(--panel-edge)}
+#art button:hover{color:var(--jacket)}
+#artTabs button[aria-selected=true]{background:var(--jacket);color:#1a1326;box-shadow:0 0 0 2px #06040d,inset 0 0 0 2px var(--jacket-dk)}
+#artClose{margin-left:auto}
+#art main{max-width:1280px;margin:0 auto;padding:16px 16px 40px}
+#art .lede{margin:0 0 8px;color:var(--ink-dim);max-width:72ch}
+#art h2{font-family:'Press Start 2P',monospace;font-size:10px;font-weight:normal;line-height:1.5;color:var(--jacket);margin:26px 0 12px}
+#art h2 small{font-family:'VT323',monospace;font-size:18px;color:var(--ink-dim);margin-left:8px}
+#art .keys{margin-top:32px;font-family:'Press Start 2P',monospace;font-size:7px;color:var(--ink-dim);text-align:center}
+.art-grid{display:grid;grid-auto-flow:dense;grid-template-columns:repeat(auto-fill,minmax(min(100%,var(--min,150px)),1fr));gap:14px}
+.art-card{display:flex;flex-direction:column;min-width:0;background:var(--panel);box-shadow:0 0 0 2px #06040d,inset 0 0 0 2px #2c2150}
+.art-fig{flex:1;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:14px;padding:12px;min-height:56px;background:repeating-conic-gradient(#231b3e 0 25%,#1b1531 0 50%) 0 0/16px 16px}
+.art-fig canvas{display:block;max-width:100%;height:auto;image-rendering:pixelated}
+.art-g{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;max-width:100%}
+.art-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:6px;max-width:100%}
+.art-row.quad{display:grid;grid-template-columns:repeat(2,auto)}
+@media (min-width:560px){.art-card.wide{grid-column:span 2}}
+.art-g>span{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--ink-dim)}
+.art-cap{padding:8px 10px 10px}
+.art-cap b{display:block;font-family:'Press Start 2P',monospace;font-size:8px;font-weight:normal;line-height:1.5;color:var(--ink)}
+.art-cap div{font-size:16px;color:var(--ink-dim)}
+.art-wait{padding:20px;color:var(--ink-dim)}
+#touch[data-st=art]{display:none!important}
 </style>
 
 <div id="wrap">
@@ -181,6 +211,7 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
       <div class="sub">Pick your rider and cross every department of Colombia.</div>
       <div class="blink" id="startTxt">PRESS ENTER</div>
       <div class="credit">Explore until your boots wear out.</div>
+      <button id="artBtn" class="artlink" type="button">ART GALLERY · G</button>
     </section>
 
     <section id="select" hidden>
@@ -201,7 +232,7 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
     </div>
     <div id="banner" hidden></div>
     <div id="prompt" hidden></div>
-    <div id="help" hidden>ARROWS / WASD ride · ENTER explore · P passport · C rider · M music</div>
+    <div id="help" hidden>ARROWS / WASD ride · ENTER explore · P passport · C rider · G art · M music</div>
 
     <div id="dialog" class="panel" hidden>
       <canvas id="portrait" width="42" height="42"></canvas>
@@ -250,7 +281,7 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
   </div>
   <div class="ab">
     <div class="menu">
-      <button class="pill" data-k="char">WHO</button><button class="pill" data-k="pass">PASS</button><button class="pill" data-k="ferry">FERRY</button><button class="pill" data-k="music">MUSIC</button>
+      <button class="pill" data-k="char">WHO</button><button class="pill" data-k="pass">PASS</button><button class="pill" data-k="ferry">FERRY</button><button class="pill" data-k="art">ART</button><button class="pill" data-k="music">MUSIC</button>
     </div>
     <div class="face">
       <button class="rb b" data-k="back">B</button><button class="rb a" data-k="ok">A</button>
@@ -258,6 +289,10 @@ body{font-family:'VT323',ui-monospace,Menlo,monospace;-webkit-font-smoothing:non
   </div>
 </div>
 
+<div id="art" hidden>
+  <header><h1>ART GALLERY</h1><nav id="artTabs" role="tablist" aria-label="Art categories"></nav><button id="artClose" type="button">✕ BACK</button></header>
+  <main id="artBody"></main>
+</div>
 <script>
 (()=>{
 'use strict';
@@ -383,7 +418,7 @@ const SFX={
 
 /* ---------------- input ---------------- */
 const K={},JP={};
-const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',Space:'jump',Enter:'ok',NumpadEnter:'ok',KeyE:'ok',KeyP:'pass',Tab:'pass',Escape:'back',KeyM:'music',KeyF:'ferry',KeyC:'char'};
+const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',Space:'jump',Enter:'ok',NumpadEnter:'ok',KeyE:'ok',KeyP:'pass',Tab:'pass',Escape:'back',KeyM:'music',KeyF:'ferry',KeyC:'char',KeyG:'art'};
 addEventListener('keydown',e=>{const k=KEYMAP[e.code];if(!k)return;e.preventDefault();audioInit();if(!K[k])JP[k]=true;K[k]=true;});
 addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)K[k]=false;});
 addEventListener('blur',()=>{for(const k in K)K[k]=false;});
@@ -720,7 +755,8 @@ function drawPortrait(c,C){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.
 }
 
 let CUR=null,RIDER=null,MINI=null;const CSPR={};
-function setChar(C){CUR=C;const s=CSPR[C.id]||(CSPR[C.id]={r:[0,1,2,3].map(f=>riderFrame(f,C)),m:[0,1].map(f=>miniFrame(f,C))});RIDER=s.r;MINI=s.m;
+const charSpr=C=>CSPR[C.id]||(CSPR[C.id]={r:[0,1,2,3].map(f=>riderFrame(f,C)),m:[0,1].map(f=>miniFrame(f,C))});
+function setChar(C){CUR=C;const s=charSpr(C);RIDER=s.r;MINI=s.m;
   drawPortrait($('portrait'),C);const N=C.nick.toUpperCase();$('who').textContent=N;$('ppTitle').textContent='PASAPORTE DE '+N;
   $('endTxt').textContent='Every department. Every pothole. Every tinto. '+C.nick+(C.veh==='bike'?' and a trusty black bicycle':' and Kali')+' rode the whole of Colombia.';}
 
@@ -5472,7 +5508,7 @@ function updateFerry(dt){FERRY.t+=dt/4;if(FERRY.t>=1){M.x=FERRY.b.x+(FERRY.dir>0
 let state='title',TR=null,DLG=null;
 function setState(s){state=s;$('touch').dataset.st=s;
   $('title').hidden=s!=='title';$('select').hidden=s!=='select';const onMap=['map','dialog','passport','ferry'].includes(s);$('hud').hidden=!onMap;$('help').hidden=s!=='map';
-  $('prompt').hidden=s!=='map'||!M.near;$('dialog').hidden=s!=='dialog';$('postcard').hidden=s!=='postcard';$('passport').hidden=s!=='passport';$('fail').hidden=s!=='fail';$('ending').hidden=s!=='ending';
+  $('prompt').hidden=s!=='map'||!M.near;$('dialog').hidden=s!=='dialog';$('postcard').hidden=s!=='postcard';$('passport').hidden=s!=='passport';$('art').hidden=s!=='art';$('fail').hidden=s!=='fail';$('ending').hidden=s!=='ending';
   if(s!=='map')$('banner').hidden=true;
   if(onMap){updateHud();updatePrompt();updateWhere();}}
 function transition(mid,cx,cy){TR={t:0,mid,done:false,cx:cx??W/2,cy:cy??H/2};}
@@ -5525,8 +5561,106 @@ function confirmSel(){const C=CHARS[SEL.i],fm=SEL.fromMap;SEL=null;SAVE.c=C.id;s
   else if(!SAVE.intro){camFollow(M.x,M.y);transition(()=>{say(introLines(C),()=>{SAVE.intro=true;save();setState('map');});});}
   else transition(()=>setState('map'));}
 
+/* ---------------- art gallery ---------------- */
+// Every procedural sprite on its own, grouped by tab. A tab is built the first time it opens.
+// Backdrops are heavy (two 1536px layers each), so they paint one department per tick while the gallery is open.
+const ART={pump:null,tab:0,from:'title',built:{},anim:[],t:0,queue:[]};
+const ART_TABS=[['riders','Riders'],['places','Places'],['backdrops','Backdrops'],['scenery','Scenery'],['hazards','Hazards & items'],['map','Map']];
+const ART_NAME={palm:'Coconut palm',palmL:'Leaning palm',waxpalm:'Wax palm',euca:'Eucalyptus',frailejon:'Frailejón',house:'Colonial house',church:'Church',coffeebush:'Coffee bush',guadua:'Guadua bamboo',banana:'Banana plant',cactus:'Cactus',rancho:'Rancho',moriche:'Moriche palm',cow:'Cow',cowS:'Cebú cow',jtree:'Jungle tree',stilt:'Stilt house',fence:'Fence',rockS:'Rocks',heron:'Heron',maloca:'Maloca',cane:'Sugar cane',mangrove:'Mangrove',
+  pothole:'Pothole',puddle:'Puddle',rock:'Rock',cone:'Traffic cone',crab:'Crab',log:'Log',capy:'Capybara',goat:'Goat',cactusS:'Small cactus',logf:'Floating log',rockw:'River rock',bump:'Speed bump',vent:'Steam vent',
+  dancer:'Marimonda dancer',carriage:'Horse carriage',bull:'Bull',buffalo:'Water buffalo',cyclist:'Cyclist',chiva:'Chiva bus',dolphin:'Pink dolphin',canoe:'Canoe',boot:'Boot',bootx:'Worn-out boot',
+  penol:'Rock monolith',lajas:'Canyon sanctuary',clocktower:'Clock tower',lighthouse:'Lighthouse',domes:'Stone domes',rockart:'Rock paintings',observatory:'Observatory',terraces:'Terraces',hillchurch:'Hilltop church',waxpalms:'Wax palm valley',hotspring:'Hot spring',cay:'Cay pier',cablecar:'Cable car',dolphins:'River stilt village',waterfall:'Waterfall'};
+const ART_LM=['penol','lajas','clocktower','lighthouse','domes','rockart','observatory','terraces','hillchurch','waxpalms','hotspring','cay','cablecar','dolphins','waterfall'];
+const artName=k=>ART_NAME[k]||(s=>s.charAt(0).toUpperCase()+s.slice(1))(k.replace(/^[a-z]+_/,'').replace(/([a-z])([A-Z0-9])/g,'$1 $2').replace(/_/g,' '));
+const artList=a=>a.length>4?a.slice(0,3).join(', ')+' +'+(a.length-3)+' more':a.join(', ');
+function artEl(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+// A scaled copy of a sprite. Copies, because cached sprites can be shown in more than one card.
+function artCv(src,z){const[c,g]=mk(src.width,src.height);g.drawImage(src,0,0);c.style.width=src.width*z+'px';return c;}
+const artZ=c=>c.height<=14?5:c.height<=30?4:c.height<=60?3:2;
+function artG(label,...nodes){const g=artEl('div','art-g'),row=artEl('div','art-row');row.append(...nodes);g.append(row);if(label)g.append(artEl('span',null,label));return g;}
+function artCard(title,sub,groups){const c=artEl('div','art-card'),f=artEl('div','art-fig'),cap=artEl('div','art-cap');f.append(...groups);cap.append(artEl('b',null,title));if(sub)cap.append(artEl('div',null,sub));c.append(f,cap);return c;}
+function artGrid(min){const g=artEl('div','art-grid');g.style.setProperty('--min',min+'px');return g;}
+function artHead(sec,title,note){const h=artEl('h2',null,title);if(note)h.append(artEl('small',null,note));sec.append(h);}
+// Rows [top, bottom) of the first w columns that hold any pixel, so a layer card skips its empty sky.
+function artCrop(src,w,y1){const d=src.getContext('2d').getImageData(0,0,w,y1).data;let y0=0;scan:for(;y0<y1;y0++)for(let x=0;x<w;x++)if(d[(y0*w+x)*4+3])break scan;
+  const[c,g]=mk(w,y1-y0);g.drawImage(src,0,y0,w,y1-y0,0,0,w,y1-y0);return c;}
+function artAnim(src,frames,dt,z){const c=artCv(src,z);ART.anim.push({c,g:c.getContext('2d'),fr:frames,dt,i:0});return c;}
+const deptPool=d=>(DX[d.id]&&DX[d.id].scene)||(SCENE[d.id]&&SCENE[d.id].props)||BIOMES[d.biome].props;
+const deptLm=d=>DX[d.id]&&DX[d.id].lm?'dx:'+d.id:(d.lm||('arch:'+d.id));
+
+const ART_BUILD={
+riders(sec){
+  sec.append(artEl('p','lede',CHARS.length+' riders. Each one is a palette plus a few feature flags, turned into a riding animation, a map sprite and a dialog portrait.'));
+  const grid=artGrid(250);
+  for(const C of CHARS){const s=charSpr(C);const[p]=mk(42,42);drawPortrait(p,C);p.style.width='126px';
+    const frames=artG('Ride frames',...s.r.map(f=>artCv(f,2)));frames.firstChild.classList.add('quad');
+    const what=C.cat?'Cat':C.dog?'Dog':'',veh=C.veh==='bike'?'Black bicycle':'Kali, the black scooter';
+    grid.append(artCard(C.name,[what,veh].filter(Boolean).join(' · '),[artG('Riding',artAnim(s.r[0],s.r,.1,4)),artG('Map',artAnim(s.m[0],s.m,.22,4)),artG('Portrait',p),frames]));}
+  sec.append(grid);},
+places(sec){
+  sec.append(artEl('p','lede','The landmark waiting at the end of each department’s ride.'));
+  const grid=artGrid(300);
+  for(const d of DEPTS)grid.append(artCard(d.name,d.cap+' · '+BIOME_NAME[d.biome]+(d.filmed?' · filmed by Ginna':''),[artG('',artCv(landmark(deptLm(d),d),2))]));
+  sec.append(grid);
+  const old=DEPTS.filter(d=>ART_LM.includes(d.lm)&&deptLm(d)!==d.lm);
+  if(old.length){artHead(sec,'Retired designs','Earlier landmarks, replaced by newer art');const g2=artGrid(260);
+    for(const d of old)g2.append(artCard(artName(d.lm),'First drawn for '+d.name,[artG('',artCv(landmark(d.lm,d),2))]));sec.append(g2);}},
+backdrops(sec){
+  sec.append(artEl('p','lede','Each ride stacks a sky, a far layer, a set piece and a mid layer, then draws the roadside, road and rider on top. Layers repeat every '+LW+'px; one screen width is shown.'));
+  for(const d of DEPTS){artHead(sec,d.name,BIOME_NAME[d.biome]);const grid=artGrid(320);grid.append(artEl('div','art-wait','Painting…'));sec.append(grid);ART.queue.push([d,grid]);}},
+scenery(sec){
+  // Pools may name a variant ('quindio_casa:2'); group by base key and remember which variants appear.
+  const use={},vars={};for(const d of DEPTS)for(const key of new Set(deptPool(d))){const[k,v]=key.split(':');if(!(use[k]=use[k]||[]).includes(d.name))use[k].push(d.name);if(v!=null)(vars[k]=vars[k]||new Set()).add(+v);}
+  const own=k=>DEPTS.find(d=>k.startsWith(d.id+'_'));
+  const VAR={house:5,stilt:4,euca:4,coffeebush:4,jtree:4};
+  const card=k=>{const vs=VAR[k]?[...Array(VAR[k]).keys()]:vars[k]?[...vars[k]].sort((a,b)=>a-b):[0],multi=vs.length>1,imgs=vs.map(v=>{const im=prop(k+':'+v);return artCv(im,Math.max(1,artZ(im)-(multi?1:0)));});
+    const u=use[k],c=artCard(artName(k),u?'Seen in '+artList(u):'Not on any road yet',[artG(multi?vs.length+' variants':'',...imgs)]);if(multi)c.classList.add('wide');return c;};
+  sec.append(artEl('p','lede','Roadside props, drawn along the verge of every ride.'));
+  artHead(sec,'Shared scenery','Used across biomes');const shared=Object.keys(use).filter(k=>!own(k));if(!shared.includes('church'))shared.push('church');
+  const g=artGrid(170);shared.forEach(k=>g.append(card(k)));sec.append(g);
+  for(const d of DEPTS){const ks=Object.keys(DXP).filter(k=>own(k)===d);if(!ks.length)continue;
+    artHead(sec,d.name,ks.length+' props');const gd=artGrid(170);ks.forEach(k=>gd.append(card(k)));sec.append(gd);}},
+hazards(sec){
+  const biomes=f=>Object.keys(BIOMES).filter(b=>f(BIOMES[b])).map(b=>BIOME_NAME[b]);
+  const depts=f=>DEPTS.filter(d=>TW[d.id]&&f(TW[d.id])).map(d=>d.name);
+  const card=(k,where)=>{const im=prop(k);return artCard(artName(k),where.length?artList(where):'',[artG('',artCv(im,artZ(im)))]);};
+  const TK={bump:'bumps',vent:'vents'};
+  sec.append(artEl('p','lede','Things to jump, dodge and collect on the road.'));
+  artHead(sec,'Obstacles');let g=artGrid(160);
+  for(const k in OBS)g.append(card(k,[...biomes(B=>B.obs.includes(k)),...depts(t=>(t.obs||[]).includes(k)||t.k===TK[k]||(k==='rock'&&t.k==='rocks'))]));sec.append(g);
+  artHead(sec,'Moving hazards','Challenge rides');g=artGrid(160);for(const k in MOVER)g.append(card(k,depts(t=>t.mover===k)));sec.append(g);
+  artHead(sec,'Collectibles');g=artGrid(160);for(const k in ITEM_NAME)g.append(card(k,biomes(B=>B.item===k).concat(k==='star'?depts(t=>t.stars):[])));
+  g.append(card('boot',['Boot wear meter']),card('bootx',['Lost a life']));sec.append(g);
+  artHead(sec,'Vehicles');g=artGrid(160);g.append(card('canoe',depts(t=>t.k==='boat')));sec.append(g);},
+map(sec){
+  sec.append(artEl('p','lede','The whole map, rasterized once at startup from hand-typed lat/lon outlines: department regions, ridges and peaks with hillshade, shallow water, rivers and labels.'));
+  const g=artGrid(4000);g.append(artCard('Colombia',MW+' × '+MH+' px · '+DEPTS.length+' departments',[artG('',artCv(MAPC,2))]));sec.append(g);},
+};
+// One department's backdrop set. It reuses the title demo ride, so the layers are exactly what the game builds.
+function artBackdrop(d,grid){const keep=R;let r,sc;
+  try{r=startRide(d,true);r.dist=180;drawRideScene();[sc]=mk(W,H);sc.getContext('2d').drawImage(cv,0,0);}finally{R=keep;}
+  const X=DX[d.id]||{},midK=(X.mid&&X.mid.k)||(SCENE[d.id]&&SCENE[d.id].mid&&SCENE[d.id].mid.k)||r.B.mid.k;
+  const cards=[artCard('Full scene','Everything composited',[artG('',artCv(sc,2))]),artCard('Sky',r.time,[artG('',artCv(artCrop(r.sky,W,GTOP),2))]),
+    artCard('Far layer',r.farK,[artG('',artCv(artCrop(r.far,W,H),2))])];
+  if(r.back)cards.push(artCard('Set piece','Between the far and mid layers',[artG('',artCv(r.back,2))]));
+  cards.push(artCard('Mid layer',midK,[artG('',artCv(artCrop(r.mid,W,H),2))]));
+  grid.replaceChildren(...cards);}
+function artPump(){if(ART.pump)return;const step=()=>{if(state!=='art'||!ART.queue.length){ART.pump=null;return;}const[d,grid]=ART.queue.shift();artBackdrop(d,grid);ART.pump=setTimeout(step,16);};ART.pump=setTimeout(step,0);}
+function artTab(i){const n=ART_TABS.length;ART.tab=(i+n)%n;const id=ART_TABS[ART.tab][0];
+  $('artTabs').querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-selected',j===ART.tab));
+  let sec=$('art-'+id);if(!sec){sec=artEl('section');sec.id='art-'+id;$('artBody').append(sec);ART_BUILD[id](sec);sec.append(artEl('div','keys','← → CATEGORY · ↑ ↓ SCROLL · ESC BACK'));}
+  $('artBody').querySelectorAll('section').forEach(s=>s.hidden=s!==sec);$('art').scrollTop=0;artPump();}
+function openArt(){ART.from=state;setState('art');artTab(ART.tab);try{history.replaceState(null,'','#art');}catch(e){}}
+function closeArt(){setState(ART.from);try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+function updateArt(dt){if(JP.back||JP.art){closeArt();return;}if(JP.left||JP.right){artTab(ART.tab+(JP.right?1:-1));return;}
+  const el=$('art');if(K.up||K.down)el.scrollTop+=(K.down?1:-1)*dt*700;
+  ART.t+=dt;for(const a of ART.anim){const f=Math.floor(ART.t/a.dt)%a.fr.length;if(f!==a.i){a.i=f;a.g.clearRect(0,0,a.c.width,a.c.height);a.g.drawImage(a.fr[f],0,0);}}}
+ART_TABS.forEach(([,label],i)=>{const b=artEl('button',null,label.toUpperCase());b.type='button';b.setAttribute('role','tab');b.addEventListener('click',()=>{if(state==='art')artTab(i);});$('artTabs').append(b);});
+$('artClose').addEventListener('click',()=>{if(state==='art')closeArt();});
+$('artBtn').addEventListener('click',()=>{if(state==='title'&&!TR)openArt();});
+
 function start(){setChar(charById(SAVE.c));buildSelect();buildMap();initMap();startRide(DEPTS.find(d=>d.id==='meta'),true);
-  if(SAVE.v.length)$('startTxt').textContent='PRESS ENTER · '+SAVE.v.length+'/32 STAMPED';setState('title');requestAnimationFrame(loop);}
+  if(SAVE.v.length)$('startTxt').textContent='PRESS ENTER · '+SAVE.v.length+'/32 STAMPED';setState('title');if(location.hash==='#art')openArt();requestAnimationFrame(loop);}
 
 let last=performance.now(),T=0;
 function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
@@ -5534,9 +5668,9 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
   if(TR){TR.t+=dt/.9;if(TR.t>=.5&&!TR.done){TR.done=true;TR.mid();TR.cx=W/2;TR.cy=H/2;if(state==='ride'||state==='map'){}}if(TR.t>=1)TR=null;}
   else{
     switch(state){
-      case 'title':updateRide(dt);if(okP())openSelect(false);break;
+      case 'title':if(JP.art){openArt();break;}updateRide(dt);if(okP())openSelect(false);break;
       case 'select':updateRide(dt);updateSelect();break;
-      case 'map':if(JP.char){transition(()=>{startRide(DEPTS.find(d=>d.id==='meta'),true);openSelect(true);});break;}updateMap(dt);break;
+      case 'map':if(JP.art){openArt();break;}if(JP.char){transition(()=>{startRide(DEPTS.find(d=>d.id==='meta'),true);openSelect(true);});break;}updateMap(dt);break;
       case 'dialog':updateDialog(dt);break;
       case 'passport':if(JP.pass||JP.back||JP.ok)setState('map');break;
       case 'ferry':updateFerry(dt);break;
@@ -5544,11 +5678,12 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
       case 'postcard':updateRide(dt);if(okP()||JP.back)leaveRide();break;
       case 'fail':if(okP()){const d=R.d;transition(()=>{startRide(d);setState('ride');});}else if(JP.back)leaveRide();break;
       case 'ending':updateRide(dt);if(okP()){transition(()=>{R=null;setState('map');});}break;
+      case 'art':updateArt(dt);break;
     }}
   // draw
   if(state==='title'||state==='select'||state==='ride'||state==='postcard'||state==='fail'||state==='ending'){if(R)drawRideScene();}
   else if(state==='ferry'){const p=ferryPt(FERRY.a,FERRY.b,FERRY.t);camFollow(p[0],p[1]);drawMap(T,true,[p[0],p[1],(FERRY.b.x>FERRY.a.x)?1:-1]);}
-  else{camFollow(M.x,M.y);drawMap(T,false);}
+  else if(state!=='art'){camFollow(M.x,M.y);drawMap(T,false);}
   if(TR){const k=TR.t<.5?1-TR.t/.5:(TR.t-.5)/.5;const rr=Math.max(0,k*300);ctx.fillStyle='#0b0816';ctx.beginPath();ctx.rect(0,0,W,H);ctx.arc(TR.cx,TR.cy,rr,0,Math.PI*2);ctx.fill('evenodd');}
   const tshow=!!(state==='ride'&&!TR&&R&&R.tw&&R.t<3.6);if($('twist').hidden===tshow)$('twist').hidden=!tshow;
   for(const k in JP)delete JP[k];

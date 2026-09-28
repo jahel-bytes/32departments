@@ -17,9 +17,12 @@ Ride around the map of Colombia and pull up to a department's flag to start its 
 | Enter / E | Explore a department · confirm |
 | P / Tab | Passport |
 | C | Choose a rider |
+| G | Art gallery (every sprite, landmark and backdrop on its own) |
 | F | Take the ferry to San Andrés |
 | M | Music on/off |
 | Esc | Back |
+
+The art gallery is also at `/art` (or `index.html#art`), and has a button on the title screen.
 
 Touch controls appear on phones and tablets. Progress is saved in your browser.
 
