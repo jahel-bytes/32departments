@@ -653,6 +653,7 @@ function miniFrame(f,C){return spr(20,18,(P0)=>{const P=(x,y,w,h,c)=>P0(x,y+3,w,
   if(C.hs==='curly'||C.hs==='afro')P(6,-4+b,4,1,H);
   if(C.hs==='tail'||C.hs==='pony')P(5,-2+b,1,1,H);
   if(C.beard==='full'||C.beard==='short')P(7,-1+b,3,1,C.bc);if(C.stache)P(9,-1+b,1,1,C.stache);if(C.glass&&!C.gsemi)P(9,-2+b,1,1,C.gfr);
+  if(C.hs==='bob'){P(7,-4+b,3,1,H);P(5,-3+b,2,4,H);}
   if(C.hat==='beanie'){P(7,-4+b,3,1,'#8a8f98');P(6,-3+b,4,1,'#8a8f98');}
   if(C.hat==='bucket'){P(7,-4+b,3,1,C.hatC);P(5,-3+b,6,1,C.hatC2);}
   if(C.hat==='cap'){P(6,-4+b,4,1,C.hatC);P(10,-3+b,1,1,C.hatC2);}
@@ -5538,8 +5539,26 @@ function arrive(){const r=R,d=r.d;if(r.quota&&r.items<r.quota){failRide('NOT ENO
 function leaveRide(){transition(()=>{R=null;setState('map');if(SAVE.v.length>=32&&!SAVE.end){SAVE.end=true;save();startRide(DEPTS.find(d=>d.id==='meta'),true);setState('ending');}},RX+20,GY-14);}
 
 const INTRO_GINNA=['Hi, I\'m Ginna, meawdy pawdy!','This is Kali, my black scooter. Together we\'re on a mission: explore all 32 departments of Colombia.','Ride the map with the ARROW keys or WASD. Pull up to a flag and press ENTER to explore that department.','On the road, SPACE jumps and ← → set the pace. Dodge the huecos, grab souvenirs and look after my boots.','Every department has its own challenge, and the roads get tougher with every stamp.','From Cartagena, press F to catch the ferry to San Andrés. P opens my passport. ¡Vamos!'];
+const INTRO_HI={
+  jahel:'Meawdy pawdy! I decided to go social patooting around Colombia, so I\'m going to borrow Kali to discover people and cats!!!',
+  meg:'I want to hike and explore Colombia so I can increase my rock collection and pet Colombian cats!',
+  gatewood:'I\'m just iconic, so I\'ll go explore Colombia with Kali la moto. I brought my dinosaur onesie in the backpack.',
+  juli:'Hi neighbor, I\'m going to borrow your moto to go explore Colombia because mine broke.',
+  claire:'I\'m going to explore Colombia and then go to Spain, all on Kali la moto. I\'ll find cool places to party.',
+  jp:'My butt still hurts from the surgery, so I\'m going to explore Colombia, but I need to take breaks between cities.',
+  ross:'I like trains and I\'m going to cycle across Colombia because why not, hahaha!',
+  kelly:'I think the best way to boost my fitness career is to cross Colombia and discover new gyms. I\'m 5\'10", BTW.',
+  carmelo:'I\'m just iconic and sassy. I\'m going to bring Kali and travel through Colombia to find inspiration for my poetry.',
+  xiomara:'I\'m going to Urrao on the weekend, and then I\'ll explore Colombia on Kali la moto.',
+  guss:'Meow, why am I here? I don\'t even like to be outside.',
+  chorizo:'Woof woof, I\'m a winner dog! Woof, woof!',
+  sheridan:'I\'m going to explore the 32 departments of Colombia to see why Virginia finds it so fun.',
+  debora:'I\'m going to explore all the departments in Colombia while Virginia takes care of the pets.',
+  enrique:'Quiero compartir mi amor por Chocó y San Pacho por toda Colombia. Voy a usar a Kali la moto para transmitir mi mensaje.',
+  juls:'I really love resorts and Disney, but I want to challenge myself and come explore Colombia. I know it\'s rough, but I can do it.',
+  rayna:'I\'m going to explore all the departments, and Virginia can take care of Ash.'};
 function introLines(C){if(C.id==='ginna')return INTRO_GINNA;const r=INTRO_GINNA.slice(2);
-  const hi=C.dog?'¡Guau! I\'m Chorizo, champion wiener dog and the fastest sausage in Colombia. Ginna let me borrow Kali!':C.cat?'¡Miau! I\'m Guss. Ginna from Broken Boots Travel left the keys out, so…':'¡Hola! I\'m '+C.nick+', riding the Broken Boots route of Ginna from Broken Boots Travel.';
+  const hi=INTRO_HI[C.id]||'¡Hola! I\'m '+C.nick+', and I\'m going to explore Colombia!';
   const veh=C.veh==='bike'?'This is my black bicycle. No motor, just legs. Together we\'re on a mission: explore all 32 departments of Colombia.':'This is Kali, Ginna\'s little motico. Together we\'re on a mission: explore all 32 departments of Colombia.';
   return[hi,veh,...r];}
 
@@ -5556,9 +5575,10 @@ function updateSelect(){const n=CHARS.length,cols=9;let i=SEL.i;
   if(okP())confirmSel();
   else if(JP.back){setChar(SEL.orig);const fm=SEL.fromMap;SEL=null;if(fm)transition(()=>{R=null;setState('map');});else setState('title');}}
 function confirmSel(){const C=CHARS[SEL.i],fm=SEL.fromMap;SEL=null;SAVE.c=C.id;save();SFX.coin();
-  if(fm)transition(()=>{R=null;setState('map');});
+  const hi=()=>say([introLines(C)[0]],()=>setState('map'));
+  if(fm)transition(()=>{R=null;hi();});
   else if(!SAVE.intro){camFollow(M.x,M.y);transition(()=>{say(introLines(C),()=>{SAVE.intro=true;save();setState('map');});});}
-  else transition(()=>setState('map'));}
+  else transition(hi);}
 
 /* ---------------- art gallery ---------------- */
 // Every procedural sprite on its own, grouped by tab. A tab is built the first time it opens.
